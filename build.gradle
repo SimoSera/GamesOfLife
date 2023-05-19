@@ -25,8 +25,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-  mainModule = 'com.example.gamesoflife'
-  mainClass = 'com.example.gamesoflife.HelloApplication'
+  mainModule = 'com.simosera.gamesoflife'
+  mainClass = 'com.simosera.gamesoflife.HelloApplication'
 }
 
 javafx {

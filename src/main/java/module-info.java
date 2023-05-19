@@ -4,6 +4,6 @@ module com.example.gamesoflife {
             
         requires org.controlsfx.controls;
                             
-    opens com.example.gamesoflife to javafx.fxml;
-    exports com.example.gamesoflife;
+    opens com.simosera.gamesoflife to javafx.fxml;
+    exports com.simosera.gamesoflife;
 }
