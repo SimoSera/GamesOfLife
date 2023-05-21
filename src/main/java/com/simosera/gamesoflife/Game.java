@@ -31,6 +31,17 @@ public class Game {
         }
     }
 
+    public Game(int height, int width){
+        this.height=height;
+        this.width=width;
+        this.cells=new Cell[height][width];
+        for(int i=0;i<height;i++) {
+            for (int j = 0; j < width; j++) {
+                this.cells[i][j] = new Cell(false);
+            }
+        }
+    }
+
     /**
      *    Method that computes the next step in the game of life using the ruleConsumer
      */
