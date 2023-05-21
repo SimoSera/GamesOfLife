@@ -13,7 +13,7 @@
          <children>
             <Button fx:id="setBut" layoutX="557.0" layoutY="22.0" mnemonicParsing="false" text="Set" />
             <Slider fx:id="speedSlider" layoutX="395.0" layoutY="28.0" />
-            <ToggleButton fx:id="playTButton" layoutX="260.0" layoutY="22.0" mnemonicParsing="false" text="Play" />
+            <ToggleButton fx:id="playTButton" layoutX="260.0" layoutY="22.0" mnemonicParsing="false" onAction="#playTButtonPressed" text="Play" />
          </children>
       </AnchorPane>
    </bottom>
