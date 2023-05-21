@@ -35,6 +35,7 @@ public class GameController {
         }
     }
 
+
     public void initialize(){
         started=false;
         game=new Game(100,100);
