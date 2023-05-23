@@ -7,12 +7,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="586.0" prefWidth="874.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.simosera.gamesoflife.GameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.simosera.gamesoflife.GameController">
    <bottom>
-      <AnchorPane prefHeight="96.0" prefWidth="874.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="96.0" prefWidth="0.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="setBut" layoutX="557.0" layoutY="22.0" mnemonicParsing="false" text="Set" />
-            <Slider fx:id="speedSlider" layoutX="395.0" layoutY="28.0" />
+            <Button fx:id="setBut" layoutX="557.0" layoutY="22.0" mnemonicParsing="false" onAction="#speedSetter" text="Set" />
+            <Slider fx:id="speedSlider" layoutX="395.0" layoutY="28.0" min="1.0" value="10.0" />
             <ToggleButton fx:id="playTButton" layoutX="260.0" layoutY="22.0" mnemonicParsing="false" onAction="#playTButtonPressed" text="Play" />
          </children>
       </AnchorPane>
@@ -20,7 +20,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane fx:id="matrixPane" layoutX="18.0" layoutY="17.0" prefHeight="471.0" prefWidth="839.0" />
+            <Pane fx:id="matrixPane" layoutX="18.0" layoutY="17.0" prefHeight="500.0" prefWidth="1000.0" />
          </children>
       </AnchorPane>
    </center>

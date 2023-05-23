@@ -6,6 +6,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -13,14 +16,40 @@ import java.io.IOException;
 public class MenuController {
 
     @FXML
-    private Button startGameButton;
+    private ColorPicker backgroundColorChooser;
 
     @FXML
+    private ColorPicker cellColorPicker;
+
+    @FXML
+    private ComboBox<String> cellShapeComboBox;
+
+    @FXML
+    private ComboBox<String> rulesetComboBox;
+
+    @FXML
+    private Button startGameButton;
+
+    public void initialize(){
+        cellShapeComboBox.getItems().clear();
+        rulesetComboBox.getItems().clear();
+        cellShapeComboBox.getItems().setAll("Square","Hexagon","Triangle");
+        rulesetComboBox.getItems().setAll("Conway's","Default");
+        cellShapeComboBox.getSelectionModel().select(0);
+        rulesetComboBox.getSelectionModel().select(0);
+    }
+    @FXML
     void startGame(ActionEvent event) throws IOException {
+        Color cellColor=cellColorPicker.getValue();
+        Color bgColor=backgroundColorChooser.getValue();
+        String selectedCellShape=cellShapeComboBox.getValue();
+        String selectedRules=rulesetComboBox.getValue();
         Stage stage=(Stage) ((Node)event.getSource()).getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("game-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 500, 500);
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Game Of Life");
+        GameController gameController = fxmlLoader.getController();
+        gameController.initData(100,50,cellColor,bgColor,selectedCellShape,selectedRules);//modify when you will have width and height
         stage.setScene(scene);
         stage.show();
     }

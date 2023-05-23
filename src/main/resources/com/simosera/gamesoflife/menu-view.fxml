@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.paint.Color?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.simosera.gamesoflife.MenuController">
    <top>
@@ -25,13 +26,19 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox layoutX="22.0" layoutY="42.0" prefWidth="150.0" />
-            <ComboBox layoutX="237.0" layoutY="42.0" prefWidth="150.0" />
+            <ComboBox fx:id="rulesetComboBox" layoutX="22.0" layoutY="42.0" prefWidth="150.0" />
+            <ComboBox fx:id="cellShapeComboBox" layoutX="237.0" layoutY="42.0" prefWidth="150.0" />
             <Label layoutX="43.0" layoutY="125.0" text="Cell Color" />
             <Label layoutX="298.0" layoutY="14.0" text="Cell Shape" />
             <Label layoutX="69.0" layoutY="14.0" text="Ruleset" />
-            <ColorPicker layoutX="21.0" layoutY="142.0" />
-            <ColorPicker layoutX="175.0" layoutY="142.0" />
+            <ColorPicker fx:id="cellColorPicker" layoutX="21.0" layoutY="142.0">
+               <value>
+                  <Color red="0.42825597524642944" green="0.8026315569877625" blue="0.07803362607955933" />
+               </value></ColorPicker>
+            <ColorPicker fx:id="backgroundColorChooser" layoutX="175.0" layoutY="142.0">
+               <value>
+                  <Color red="0.05812621861696243" green="0.047514621168375015" blue="0.6842105388641357" />
+               </value></ColorPicker>
             <Label layoutX="224.0" layoutY="117.0" text="Background Color" />
          </children>
       </AnchorPane>

@@ -44,16 +44,12 @@ public class Cell {
         return new ArrayList<Coordinate>(List.of(new Coordinate(-1,-1),
                 new Coordinate(-1,0),new Coordinate(-1,1),
                 new Coordinate(0,-1),new Coordinate(0,1),
-                new Coordinate(1,-1),new Coordinate(-1,0),
+                new Coordinate(1,-1),new Coordinate(1,0),
                 new Coordinate(1,1)));
     }
 
-    public static Predicate<Cell> getRulePredicate(){
-        return x-> x.getNeighboursCount()==3;
-    }
-
     public void applyRules(){
-        setLive(getNeighboursCount()==3);
+        setLive(getNeighboursCount()==3 || (getNeighboursCount()==2 && isLive()));
     }
 
 }
