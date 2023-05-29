@@ -1,25 +1,20 @@
 package com.simosera.gamesoflife;
 
-import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
-import javafx.util.Duration;
+import org.controlsfx.control.action.Action;
 
-import java.util.Arrays;
+import static java.lang.Math.min;
 
 public class GameController {
-
     @FXML
     private Pane matrixPane;
 
@@ -44,6 +39,8 @@ public class GameController {
     private Color bgColor;
     private Color cellColor;
     private AnimationTimer timer;
+    private Color[] colors;
+    private long lastFrame;
 
     @FXML
     void playTButtonPressed(ActionEvent event) throws InterruptedException {
@@ -56,46 +53,35 @@ public class GameController {
         }
     }
 
-
     public void initializeAll(){
         started=false;
-
-        Cell c=new Cell(true);
         game=new Game(height,width);
-        game.setCellAtIndex(11,11,c);
-        game.setCellAtIndex(11,10,c);
-        game.setCellAtIndex(11,9,c);
-        speedMs=(int)(speedSlider.getValue()/speedSlider.getMax()*10);
+        speedMs=(int)(1000/speedSlider.getValue());
+        lastFrame=0;
         timer = new AnimationTimer() {
-
             @Override
             public void handle(long now) {
-                game.multiThreadNextStep();updateMatrix();
+                long elapsedTime=now-lastFrame;
+                if(elapsedTime/1000000>speedMs){
+                    game.multiThreadNextStep();updateMatrix();
+                    lastFrame=now;
+                }
             }
         };
+
         cellWidth=1000/(double)width;
         cellHeight=500/(double)height;
-        System.out.println(cellWidth+ "cell"+matrixPane.getWidth());
-        initializeMatrix();
         updateMatrix();
     }
 
-    public void initializeMatrix(){
-        matrixPane.getChildren().clear();
-        for(int i=0;i< game.getHeight();i++){
-            for(int j=0;j<game.getWidth();j++){
-                Rectangle rect= new Rectangle(cellWidth,cellHeight,Color.WHITE);
-               // rect.setStrokeType(StrokeType.OUTSIDE);
-                rect.setStroke(Color.BLACK);
-                rect.setX(j*cellWidth);
-                rect.setY(i*cellHeight);
-                matrixPane.getChildren().add(rect);
-            }
-        }
+    public void clickAddCell(MouseEvent event){
+        Cell c=new Cell(true);
+        game.setCellAtIndex((int)(event.getY()/cellHeight),(int) (event.getX()/cellWidth),c);
+        updateMatrix();
     }
 
     public void speedSetter(ActionEvent e){
-        speedMs=(int)(speedSlider.getValue()/speedSlider.getMax()*10);
+        speedMs=(int)(1000/speedSlider.getValue());
     }
 
 
@@ -105,12 +91,12 @@ public class GameController {
             for(int j=0;j<game.getWidth();j++){
                 Rectangle rect;
                 if(game.getCellFromIndex(i,j).isLive()){
-                    rect= new Rectangle(cellWidth,cellHeight,Color.BLUE);
+                    rect= new Rectangle(cellWidth,cellHeight,colors[min(3,game.getCellFromIndex(i,j).getNeighboursCount())]);
 
                 }else{
                     rect= new Rectangle(cellWidth,cellHeight,Color.WHITE);
                 }
-                rect.setStroke(Color.BLACK);
+                rect.setStroke(Color.GREY);
                 rect.setX(j*cellWidth);
                 rect.setY(i*cellHeight);
                 matrixPane.getChildren().add(rect);
@@ -120,20 +106,26 @@ public class GameController {
 
     public void initData(int width, int height, Color cellColor, Color bgColor,String cellShape,String rules){
         this.width=width;
-        System.out.println(width);
         this.height=height;
         this.cellColor=cellColor;
         this.bgColor=bgColor;
         this.rules=rules;
         this.cellShape=cellShape;
+        colors=new Color[5];
+        colors[0]=Color.GREEN;
+        colors[1]=Color.YELLOW;
+        colors[2]=Color.ORANGE;
+        colors[3]=Color.RED;
         initializeAll();
     }
 
 
     public void startGame() throws InterruptedException {
+        matrixPane.removeEventHandler(MouseEvent.MOUSE_CLICKED,this::clickAddCell);
         timer.start();
     }
     public void stopGame(){
+        matrixPane.addEventHandler(MouseEvent.MOUSE_CLICKED,this::clickAddCell);
         timer.stop();
     }
 

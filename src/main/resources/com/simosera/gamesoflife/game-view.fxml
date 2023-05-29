@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,16 +12,17 @@
    <bottom>
       <AnchorPane prefHeight="96.0" prefWidth="0.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="setBut" layoutX="557.0" layoutY="22.0" mnemonicParsing="false" onAction="#speedSetter" text="Set" />
-            <Slider fx:id="speedSlider" layoutX="395.0" layoutY="28.0" min="1.0" value="10.0" />
-            <ToggleButton fx:id="playTButton" layoutX="260.0" layoutY="22.0" mnemonicParsing="false" onAction="#playTButtonPressed" text="Play" />
+            <Button fx:id="setBut" layoutX="551.0" layoutY="22.0" mnemonicParsing="false" onAction="#speedSetter" text="Set" />
+            <Slider fx:id="speedSlider" layoutX="395.0" layoutY="35.0" min="1.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" value="20.0" />
+            <ToggleButton fx:id="playTButton" layoutX="654.0" layoutY="22.0" mnemonicParsing="false" onAction="#playTButtonPressed" text="Play" />
+            <Label layoutX="418.0" layoutY="14.0" text="Steps per second:" />
          </children>
       </AnchorPane>
    </bottom>
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane fx:id="matrixPane" layoutX="18.0" layoutY="17.0" prefHeight="500.0" prefWidth="1000.0" />
+            <Pane fx:id="matrixPane" layoutX="18.0" layoutY="17.0" onMouseClicked="#clickAddCell" prefHeight="500.0" prefWidth="1000.0" />
          </children>
       </AnchorPane>
    </center>

@@ -35,6 +35,7 @@ public class Game {
                 this.cells[i][j] = new Cell(cells[i][j]);
             }
         }
+        countNeighbours();
     }
 
     public Game(int height, int width){
@@ -46,14 +47,15 @@ public class Game {
                 this.cells[i][j] = new Cell(false);
             }
         }
+        countNeighbours();
     }
 
     /**
      *    Method that computes the next step in the game of life using the ruleConsumer
      */
     public void nextStep(){
-        countNeighbours();
         updateCellsLiveState();
+        countNeighbours();
     }
 
     private void updateCellsLiveState(){
@@ -97,6 +99,7 @@ public class Game {
 
     public void setCellAtIndex(int i,int j,Cell c){
         cells[i][j]=new Cell(c);
+        countNeighbours();
     }
 
     public static void main(String[] args) {
@@ -125,36 +128,30 @@ public class Game {
 
     public void multiThreadNextStep(){
         int poolSize = Runtime.getRuntime().availableProcessors()*2;
-
+        updateCellsLiveState();
         try{
             ExecutorService execs= Executors.newFixedThreadPool(poolSize);
-            for (int i = 0; i < height/poolSize; i++) {
+            int rowsPerTask=height/poolSize;
+            for (int i = 0; i < poolSize; i++) {
                 int taskNumber = i;
                 execs.submit(() -> {
-                    for(int j=0;j<poolSize;j++){
-                        countNeighboursRow(taskNumber*poolSize+j);
+                    for(int j=0;j<rowsPerTask && (taskNumber*rowsPerTask+j)<height;j++){
+                        countNeighboursRow(taskNumber*rowsPerTask+j);
                     }
-
-
                 });
-
             }
             execs.submit(() -> {
-                for(int j=0;j<height%poolSize;j++){
+                for(int j=1;j<height%poolSize+1;j++){
                     countNeighboursRow(height-j);
                 }
-
-
             });
-
-
             execs.shutdown();
-
             while(!execs.awaitTermination(10, TimeUnit.MILLISECONDS)){
             }
         }catch (InterruptedException e){
+            System.out.println("DEBUG::: ERROR");
         }
-        updateCellsLiveState();
+
     }
     /**
      * Method that counts the neighbours of each cell
