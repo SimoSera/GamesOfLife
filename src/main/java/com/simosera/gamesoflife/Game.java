@@ -1,15 +1,9 @@
 package com.simosera.gamesoflife;
 
-import javafx.util.Pair;
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Abstract class that defines the basics of game of life
@@ -102,30 +96,6 @@ public class Game {
         countNeighbours();
     }
 
-    public static void main(String[] args) {
-        Cell c=new Cell(true);
-        long startTime=System.nanoTime();
-        Game game=new Game(100,100);
-
-
-        game.setCellAtIndex(11,11,c);
-        game.setCellAtIndex(11,10,c);
-        game.setCellAtIndex(11,9,c);
-        game.nextStep();
-        game.nextStep();
-        game.nextStep();
-        long elapsedTime=System.nanoTime()-startTime;
-        System.out.println("not threaded: "+elapsedTime/1000000+"ms");
-        startTime=System.nanoTime();
-        game.multiThreadNextStep();
-        game.multiThreadNextStep();
-        game.multiThreadNextStep();
-        elapsedTime=System.nanoTime()-startTime;
-        System.out.println("threaded: "+elapsedTime/1000000+"ms");
-    }
-
-
-
     public void multiThreadNextStep(){
         int poolSize = Runtime.getRuntime().availableProcessors()*2;
         updateCellsLiveState();
@@ -146,8 +116,7 @@ public class Game {
                 }
             });
             execs.shutdown();
-            while(!execs.awaitTermination(10, TimeUnit.MILLISECONDS)){
-            }
+            while(!execs.awaitTermination(3, TimeUnit.MILLISECONDS)){}
         }catch (InterruptedException e){
             System.out.println("DEBUG::: ERROR");
         }

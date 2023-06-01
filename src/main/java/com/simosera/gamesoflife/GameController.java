@@ -1,20 +1,20 @@
 package com.simosera.gamesoflife;
 
 import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.controlsfx.control.action.Action;
 
 import static java.lang.Math.min;
 
 public class GameController {
+    public Label stepsPerSeocndLbl;//to delete  (for performance debugging)
     @FXML
     private Pane matrixPane;
 
@@ -26,6 +26,7 @@ public class GameController {
 
     @FXML
     private Slider speedSlider;
+
 
     private boolean started;
     private Game game;
@@ -41,15 +42,19 @@ public class GameController {
     private AnimationTimer timer;
     private Color[] colors;
     private long lastFrame;
-
+    private long steps;//to delete  (for performance debugging)
+    private long startTime;//to delete  (for performance debugging)
     @FXML
-    void playTButtonPressed(ActionEvent event) throws InterruptedException {
+    void playTButtonPressed() throws InterruptedException {
         if(started){
             stopGame();
             started=false;
         }else{
+            steps=0;//to delete  (for performance debugging)
+            startTime=System.nanoTime();
             startGame();
             started=true;
+
         }
     }
 
@@ -65,6 +70,8 @@ public class GameController {
                 if(elapsedTime/1000000>speedMs){
                     game.multiThreadNextStep();updateMatrix();
                     lastFrame=now;
+                    steps++;
+                    stepsPerSeocndLbl.setText(" "+(steps/((now-startTime)/1000000000.0)));//to delete  (for performance debugging)
                 }
             }
         };
@@ -80,7 +87,7 @@ public class GameController {
         updateMatrix();
     }
 
-    public void speedSetter(ActionEvent e){
+    public void speedSetter(){
         speedMs=(int)(1000/speedSlider.getValue());
     }
 
