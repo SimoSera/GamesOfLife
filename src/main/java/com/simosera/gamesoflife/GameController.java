@@ -42,7 +42,6 @@ public class GameController {
     private AnimationTimer timer;
     private Color[] colors;
     private long lastFrame;
-    private long ste;
     @FXML
     void playTButtonPressed() throws InterruptedException {
         if(started){
@@ -79,8 +78,11 @@ public class GameController {
     }
 
     public void clickAddCell(MouseEvent event){
-        Cell c=new Cell(true);
-        game.setCellAtIndex((int)(event.getY()/cellHeight),(int) (event.getX()/cellWidth),c);
+        int i,j;
+        i=(int)(event.getY()/cellHeight);
+        j=(int) (event.getX()/cellWidth);
+        Cell c=new Cell(!game.getCellFromIndex(i,j).isLive());
+        game.setCellAtIndex(i,j,c);
         updateMatrix();
     }
 
