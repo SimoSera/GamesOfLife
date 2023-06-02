@@ -22,34 +22,27 @@ public class MenuController {
     private ColorPicker cellColorPicker;
 
     @FXML
-    private ComboBox<String> cellShapeComboBox;
-
-    @FXML
     private ComboBox<String> rulesetComboBox;
 
     @FXML
     private Button startGameButton;
 
     public void initialize(){
-        cellShapeComboBox.getItems().clear();
         rulesetComboBox.getItems().clear();
-        cellShapeComboBox.getItems().setAll("Square","Hexagon","Triangle");
         rulesetComboBox.getItems().setAll("Conway's","Default");
-        cellShapeComboBox.getSelectionModel().select(0);
         rulesetComboBox.getSelectionModel().select(0);
     }
     @FXML
     void startGame(ActionEvent event) throws IOException {
         Color cellColor=cellColorPicker.getValue();
         Color bgColor=backgroundColorChooser.getValue();
-        String selectedCellShape=cellShapeComboBox.getValue();
         String selectedRules=rulesetComboBox.getValue();
         Stage stage=(Stage) ((Node)event.getSource()).getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("game-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Game Of Life");
         GameController gameController = fxmlLoader.getController();
-        gameController.initData(100,50,cellColor,bgColor,selectedCellShape,selectedRules);//modify when you will have width and height
+        gameController.initData(100,50,cellColor,bgColor,selectedRules);//modify when you will have width and height
         stage.setScene(scene);
         stage.show();
     }

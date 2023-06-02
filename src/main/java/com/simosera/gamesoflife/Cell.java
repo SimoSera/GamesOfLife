@@ -2,8 +2,6 @@ package com.simosera.gamesoflife;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class Cell {
     int neighboursCount;
@@ -40,7 +38,7 @@ public class Cell {
         this.live = live;
     }
 
-    public static ArrayList<Coordinate> neighboursRelativeCoordsToCount(){
+    public ArrayList<Coordinate> neighboursRelativeCordsToCount(){
         return new ArrayList<Coordinate>(List.of(new Coordinate(-1,-1),
                 new Coordinate(-1,0),new Coordinate(-1,1),
                 new Coordinate(0,-1),new Coordinate(0,1),

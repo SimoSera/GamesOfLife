@@ -3,7 +3,6 @@ package com.simosera.gamesoflife;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract class that defines the basics of game of life
@@ -60,14 +59,17 @@ public class Game {
     /**
      * Method that counts the neighbours of each cell
      */
-    private void countNeighbours(){
+    public void countNeighbours(){
         int sum;
+        int y;
+        int x;
         for(int i=0;i<cells.length;i++){
             for(int j=0;j<cells[i].length;j++){
                 sum=0;
-                for(Coordinate e : cells[i][j].neighboursRelativeCoordsToCount()){
-                    if(e.y+i>=0 && e.y+i<height && e.x+j>=0 && e.x+j<width)
-                        sum+=cells[i+e.y][j+e.x].isLive() ? 1 : 0 ;
+                for(Coordinate e : cells[i][j].neighboursRelativeCordsToCount()){
+                    y=(i+e.y+height)%height;
+                    x=(j+e.x+width)%width;
+                    sum+=cells[y][x].isLive() ? 1 : 0 ;
                 }
                 cells[i][j].setNeighboursCount(sum);
             }
@@ -93,48 +95,49 @@ public class Game {
 
     public void setCellAtIndex(int i,int j,Cell c){
         cells[i][j]=new Cell(c);
-        countNeighbours();
     }
 
     public ExecutorService multiThreadNextStep(){
-        int poolSize = Runtime.getRuntime().availableProcessors()*2;
         updateCellsLiveState();
-//        try{
-            ExecutorService execs= Executors.newFixedThreadPool(poolSize);
-            int rowsPerTask=height/poolSize;
-            for (int i = 0; i < poolSize; i++) {
-                int taskNumber = i;
-                execs.submit(() -> {
-                    for(int j=0;j<rowsPerTask && (taskNumber*rowsPerTask+j)<height;j++){
-                        countNeighboursRow(taskNumber*rowsPerTask+j);
-                    }
-                });
-            }
-            execs.submit(() -> {
-                for(int j=1;j<height%poolSize+1;j++){
-                    countNeighboursRow(height-j);
-                }
-            });
-            execs.shutdown();
- //           while(!execs.awaitTermination(3, TimeUnit.MILLISECONDS)){}
-  //      }catch (InterruptedException e){
-  //          System.out.println("DEBUG::: ERROR");
- //       }
-        return execs;
+        return startExecutorsCountNeighbours();
     }
     /**
      * Method that counts the neighbours of each cell
      */
     private void countNeighboursRow(int i){
         int sum;
+        int x;
+        int y;
         for(int j=0;j<cells[i].length;j++){
             sum=0;
-            for(Coordinate e : cells[i][j].neighboursRelativeCoordsToCount()){
-                if(e.y+i>=0 && e.y+i<height && e.x+j>=0 && e.x+j<width)
-                    sum+=cells[i+e.y][j+e.x].isLive() ? 1 : 0 ;
+            for(Coordinate e : cells[i][j].neighboursRelativeCordsToCount()){
+                y=(i+e.y+height)%height;
+                x=(j+e.x+width)%width;
+                sum+=cells[y][x].isLive() ? 1 : 0 ;
             }
             cells[i][j].setNeighboursCount(sum);
         }
 
+    }
+
+    public ExecutorService startExecutorsCountNeighbours(){
+        int poolSize = Runtime.getRuntime().availableProcessors()*2;
+        ExecutorService execs= Executors.newFixedThreadPool(poolSize);
+        int rowsPerTask=height/poolSize;
+        for (int i = 0; i < poolSize; i++) {
+            int taskNumber = i;
+            execs.submit(() -> {
+                for(int j=0;j<rowsPerTask && (taskNumber*rowsPerTask+j)<height;j++){
+                    countNeighboursRow(taskNumber*rowsPerTask+j);
+                }
+            });
+        }
+        execs.submit(() -> {
+            for(int j=1;j<height%poolSize+1;j++){
+                countNeighboursRow(height-j);
+            }
+        });
+        execs.shutdown();
+        return execs;
     }
 }

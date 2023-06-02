@@ -10,8 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.util.SplittableRandom;
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
 
@@ -47,7 +45,6 @@ public class GameController {
     private double cellHeight;
     private int width;
     private int height;
-    private String cellShape;
     private String rules;
     private Color bgColor;
     private Color cellColor;
@@ -60,12 +57,8 @@ public class GameController {
     void playTButtonPressed() throws InterruptedException {
         if(started){
             stopGame();
-            started=false;
         }else{
-
             startGame();
-            started=true;
-
         }
     }
 
@@ -93,12 +86,13 @@ public class GameController {
     }
 
     @FXML
-    public void clickAddCell(MouseEvent event){
+    public void clickAddCell(MouseEvent event) {
         int i,j;
         i=(int)(event.getY()/cellHeight);
         j=(int) (event.getX()/cellWidth);
         Cell c=new Cell(!game.getCellFromIndex(i,j).isLive());
-        game.setCellAtIndex(i,j,c);
+        game.setCellAtIndex(i, j, c);
+        game.countNeighbours();
         updateMatrix();
     }
     @FXML
@@ -107,7 +101,7 @@ public class GameController {
     }
 
     @FXML
-    public void randomCellsGenerator(){
+    public void randomCellsGenerator() {
         double density=densitySlider.getValue()/100;
         Cell c;
         RandomGenerator rnd=RandomGenerator.getDefault();
@@ -117,11 +111,13 @@ public class GameController {
                 game.setCellAtIndex(i,j,c);
             }
         }
+        game.countNeighbours();
         updateMatrix();
     }
 
     @FXML
     public void resetGame(){
+        stopGame();
         game=new Game(height,width);
         updateMatrix();
     }
@@ -145,28 +141,27 @@ public class GameController {
         }
     }
 
-    public void initData(int width, int height, Color cellColor, Color bgColor,String cellShape,String rules){
+    public void initData(int width, int height, Color cellColor, Color bgColor,String rules){
         this.width=width;
         this.height=height;
         this.cellColor=cellColor;
         this.bgColor=bgColor;
         this.rules=rules;
-        this.cellShape=cellShape;
         colors=new Color[5];
         colors[0]=Color.GREEN;
-        colors[1]=Color.YELLOW;
+        colors[1]=Color.YELLOWGREEN;
         colors[2]=Color.ORANGE;
         colors[3]=Color.RED;
         initializeAll();
     }
 
 
-    public void startGame() throws InterruptedException {
-        matrixPane.removeEventHandler(MouseEvent.MOUSE_CLICKED,this::clickAddCell);
+    public void startGame() {
+        started=true;
         timer.start();
     }
     public void stopGame(){
-        matrixPane.addEventHandler(MouseEvent.MOUSE_CLICKED,this::clickAddCell);
+        started=false;
         timer.stop();
     }
 
