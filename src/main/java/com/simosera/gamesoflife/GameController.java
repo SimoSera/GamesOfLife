@@ -11,6 +11,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.SplittableRandom;
+import java.util.concurrent.ExecutorService;
+import java.util.random.RandomGenerator;
+
 import static java.lang.Math.min;
 
 public class GameController {
@@ -27,6 +31,14 @@ public class GameController {
     @FXML
     private Slider speedSlider;
 
+    @FXML
+    private Button randomGenerateButton;
+
+    @FXML
+    private Slider densitySlider;
+
+    @FXML
+    private Button clearButton;
 
     private boolean started;
     private Game game;
@@ -42,6 +54,8 @@ public class GameController {
     private AnimationTimer timer;
     private Color[] colors;
     private long lastFrame;
+    private ExecutorService executorService;
+
     @FXML
     void playTButtonPressed() throws InterruptedException {
         if(started){
@@ -64,8 +78,9 @@ public class GameController {
             @Override
             public void handle(long now) {
                 long elapsedTime=now-lastFrame;
-                if(elapsedTime/1000000>speedMs){
-                    game.multiThreadNextStep();updateMatrix();
+                if(elapsedTime/1000000>speedMs && (executorService==null || executorService.isTerminated())){
+                    executorService=game.multiThreadNextStep();
+                    updateMatrix();
                     lastFrame=now;
                     stepsPerSecondLbl.setText(String.valueOf(1000/(elapsedTime/1000000)));
                 }
@@ -77,6 +92,7 @@ public class GameController {
         updateMatrix();
     }
 
+    @FXML
     public void clickAddCell(MouseEvent event){
         int i,j;
         i=(int)(event.getY()/cellHeight);
@@ -85,11 +101,30 @@ public class GameController {
         game.setCellAtIndex(i,j,c);
         updateMatrix();
     }
-
+    @FXML
     public void speedSetter(){
         speedMs=(int)(1000/speedSlider.getValue());
     }
 
+    @FXML
+    public void randomCellsGenerator(){
+        double density=densitySlider.getValue()/100;
+        Cell c;
+        RandomGenerator rnd=RandomGenerator.getDefault();
+        for(int i=0;i<height;i++){
+            for(int j=0;j<width;j++){
+                c= new Cell(rnd.nextDouble() < density);
+                game.setCellAtIndex(i,j,c);
+            }
+        }
+        updateMatrix();
+    }
+
+    @FXML
+    public void resetGame(){
+        game=new Game(height,width);
+        updateMatrix();
+    }
 
     public void updateMatrix(){
         matrixPane.getChildren().clear();

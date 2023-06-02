@@ -96,10 +96,10 @@ public class Game {
         countNeighbours();
     }
 
-    public void multiThreadNextStep(){
+    public ExecutorService multiThreadNextStep(){
         int poolSize = Runtime.getRuntime().availableProcessors()*2;
         updateCellsLiveState();
-        try{
+//        try{
             ExecutorService execs= Executors.newFixedThreadPool(poolSize);
             int rowsPerTask=height/poolSize;
             for (int i = 0; i < poolSize; i++) {
@@ -116,11 +116,11 @@ public class Game {
                 }
             });
             execs.shutdown();
-            while(!execs.awaitTermination(3, TimeUnit.MILLISECONDS)){}
-        }catch (InterruptedException e){
-            System.out.println("DEBUG::: ERROR");
-        }
-
+ //           while(!execs.awaitTermination(3, TimeUnit.MILLISECONDS)){}
+  //      }catch (InterruptedException e){
+  //          System.out.println("DEBUG::: ERROR");
+ //       }
+        return execs;
     }
     /**
      * Method that counts the neighbours of each cell
