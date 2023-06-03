@@ -25,19 +25,19 @@ public class Game {
         this.cells=new Cell[height][width];
         for(int i=0;i<height;i++) {
             for (int j = 0; j < width; j++) {
-                this.cells[i][j] = new Cell(cells[i][j]);
+                this.cells[i][j] =cells[i][j];
             }
         }
         countNeighbours();
     }
 
-    public Game(int height, int width){
+    public <T extends Cell> Game(int height, int width,T cell){
         this.height=height;
         this.width=width;
         this.cells=new Cell[height][width];
         for(int i=0;i<height;i++) {
             for (int j = 0; j < width; j++) {
-                this.cells[i][j] = new Cell(false);
+                this.cells[i][j] = cell.getDefault();
             }
         }
         countNeighbours();
@@ -94,7 +94,7 @@ public class Game {
     }
 
     public void setCellAtIndex(int i,int j,Cell c){
-        cells[i][j]=new Cell(c);
+        cells[i][j]=c;
     }
 
     public ExecutorService multiThreadNextStep(){

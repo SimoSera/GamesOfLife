@@ -3,7 +3,7 @@ package com.simosera.gamesoflife;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cell {
+public abstract class Cell {
     int neighboursCount;
     boolean live;
 
@@ -13,7 +13,7 @@ public class Cell {
     }
 
     public Cell() {
-        this.live=true;
+        this.live=false;
         neighboursCount=0;
     }
 
@@ -38,16 +38,10 @@ public class Cell {
         this.live = live;
     }
 
-    public ArrayList<Coordinate> neighboursRelativeCordsToCount(){
-        return new ArrayList<Coordinate>(List.of(new Coordinate(-1,-1),
-                new Coordinate(-1,0),new Coordinate(-1,1),
-                new Coordinate(0,-1),new Coordinate(0,1),
-                new Coordinate(1,-1),new Coordinate(1,0),
-                new Coordinate(1,1)));
-    }
+    public abstract List<Coordinate> neighboursRelativeCordsToCount();
 
-    public void applyRules(){
-        setLive(getNeighboursCount()==3 || (getNeighboursCount()==2 && isLive()));
-    }
+    public abstract void applyRules();
+
+    public abstract Cell getDefault();
 
 }

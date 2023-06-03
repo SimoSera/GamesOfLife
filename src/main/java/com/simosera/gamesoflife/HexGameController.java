@@ -11,12 +11,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
 
 import static java.lang.Math.min;
 
-public class GameController {
+public class HexGameController {
     public Label stepsPerSecondLbl;
     @FXML
     private Pane matrixPane;
