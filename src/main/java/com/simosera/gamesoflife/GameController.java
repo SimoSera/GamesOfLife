@@ -9,7 +9,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
@@ -17,7 +16,8 @@ import java.util.random.RandomGenerator;
 import static java.lang.Math.min;
 
 public class GameController {
-     Label stepsPerSecondLbl;
+    @FXML
+    Label stepsPerSecondLbl;
     @FXML
      Pane matrixPane;
 
@@ -44,8 +44,8 @@ public class GameController {
      int speedMs;
      double cellWidth;
      double cellHeight;
-     int width;
-     int height;
+     int cellsPerRow;
+     int numberOfRows;
      Color bgColor;
      Color cellColor;
      Cell rules;
@@ -65,7 +65,7 @@ public class GameController {
 
     public void initializeAll(){
         started=false;
-        game=new Game(height,width,rules);
+        game=new Game(numberOfRows, cellsPerRow,rules);
         speedMs=(int)(1000/speedSlider.getValue());
         lastFrame=0;
         timer = new AnimationTimer() {
@@ -81,8 +81,8 @@ public class GameController {
             }
         };
 
-        cellWidth=1000/(double)width;
-        cellHeight=500/(double)height;
+        cellWidth=1000/(double) cellsPerRow;
+        cellHeight=500/(double) numberOfRows;
         updateMatrix();
     }
 
@@ -107,8 +107,8 @@ public class GameController {
         double density=densitySlider.getValue()/100;
         Cell c;
         RandomGenerator rnd=RandomGenerator.getDefault();
-        for(int i=0;i<height;i++){
-            for(int j=0;j<width;j++){
+        for(int i = 0; i< numberOfRows; i++){
+            for(int j = 0; j< cellsPerRow; j++){
                 c=rules.getDefault();
                 c.setLive(rnd.nextDouble() < density);
                 game.setCellAtIndex(i,j,c);
@@ -121,7 +121,7 @@ public class GameController {
     @FXML
     public void resetGame(){
         stopGame();
-        game=new Game(height,width,rules.getDefault());
+        game=new Game(numberOfRows, cellsPerRow,rules.getDefault());
         updateMatrix();
     }
 
@@ -144,8 +144,8 @@ public class GameController {
         }
     }
     public void initData(int width, int height, Color cellColor, Color bgColor,int rules){
-        this.width=width;
-        this.height=height;
+        this.cellsPerRow =width;
+        this.numberOfRows =height;
         this.cellColor=cellColor;
         this.bgColor=bgColor;
         colors=new Color[5];

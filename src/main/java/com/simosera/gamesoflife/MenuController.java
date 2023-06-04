@@ -47,7 +47,7 @@ public class MenuController {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Game Of Life");
         GameController gameController = fxmlLoader.getController();
-        gameController.initData(15,10,cellColor,bgColor,selectedRules);//modify when you will have width and height
+        gameController.initData(60,35,cellColor,bgColor,selectedRules);//hex width/height has to be 3/2  and height lower than 40
         stage.setScene(scene);
         stage.show();
     }
