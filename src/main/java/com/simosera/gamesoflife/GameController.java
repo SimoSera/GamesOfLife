@@ -2,20 +2,26 @@ package com.simosera.gamesoflife;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
 
 import static java.lang.Math.min;
 
 public class GameController {
+    ToggleGroup tg;
+    @FXML
+    private VBox chooseCellVBox;
     @FXML
     Label stepsPerSecondLbl;
     @FXML
@@ -55,7 +61,7 @@ public class GameController {
      ExecutorService executorService;
 
     @FXML
-    void playTButtonPressed() throws InterruptedException {
+    void playTButtonPressed() {
         if(started){
             stopGame();
         }else{
@@ -143,6 +149,18 @@ public class GameController {
             }
         }
     }
+
+    public void initializeCellChoosePane(ArrayList<Class> cellTypes) throws IOException {
+        FXMLLoader fxmlLoader=new FXMLLoader(GameOfLifeApplication.class.getResource("radio-selector-element.fxml"));
+        for(Class c : cellTypes){
+            Pane option = fxmlLoader.load();
+            option.getChildren().stream().filter(v-> v instanceof RadioButton).forEach(r->{((RadioButton) r).setToggleGroup(tg);r.setId(c.getName());});
+            option.getChildren().stream().filter(v-> v instanceof Label).forEach(l->{((Label) l).setText(c.getName());});
+            option.get
+            chooseCellVBox.getChildren().add(option);
+        }
+
+    }
     public void initData(int width, int height, Color cellColor, Color bgColor,int rules){
         this.cellsPerRow =width;
         this.numberOfRows =height;
@@ -166,5 +184,6 @@ public class GameController {
         started=false;
         timer.stop();
     }
+
 
 }

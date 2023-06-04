@@ -31,7 +31,7 @@ public class Game {
         countNeighbours();
     }
 
-    public <T extends Cell> Game(int height, int width,T cell){
+    public Game(int height, int width,Cell cell){
         this.height=height;
         this.width=width;
         this.cells=new Cell[height][width];

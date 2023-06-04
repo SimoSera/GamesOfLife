@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="187.0" prefWidth="230.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="22.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </RadioButton>
+   </left>
+   <top>
+      <Label prefHeight="24.0" prefWidth="24.0" text="Cell" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <Pane prefHeight="170.0" prefWidth="187.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
