@@ -39,7 +39,11 @@ public class MenuController {
         Color bgColor=backgroundColorChooser.getValue();
         int selectedRules=rulesetComboBox.getSelectionModel().getSelectedIndex();
         Stage stage=(Stage) ((Node)event.getSource()).getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("game-view.fxml"));
+        FXMLLoader fxmlLoader;
+        if(selectedRules==1)
+            fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("game-hex-view.fxml"));
+        else
+            fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("game-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Game Of Life");
         GameController gameController = fxmlLoader.getController();

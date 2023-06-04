@@ -17,42 +17,42 @@ import java.util.random.RandomGenerator;
 import static java.lang.Math.min;
 
 public class GameController {
-    public Label stepsPerSecondLbl;
+     Label stepsPerSecondLbl;
     @FXML
-    private Pane matrixPane;
+     Pane matrixPane;
 
     @FXML
-    private ToggleButton playTButton;
+     ToggleButton playTButton;
 
     @FXML
-    private Button setBut;
+     Button setBut;
 
     @FXML
-    private Slider speedSlider;
+     Slider speedSlider;
 
     @FXML
-    private Button randomGenerateButton;
+     Button randomGenerateButton;
 
     @FXML
-    private Slider densitySlider;
+     Slider densitySlider;
 
     @FXML
-    private Button clearButton;
+     Button clearButton;
 
-    private boolean started;
-    private Game game;
-    private int speedMs;
-    private double cellWidth;
-    private double cellHeight;
-    private int width;
-    private int height;
-    private Color bgColor;
-    private Color cellColor;
-    private Cell rules;
-    private AnimationTimer timer;
-    private Color[] colors;
-    private long lastFrame;
-    private ExecutorService executorService;
+     boolean started;
+     Game game;
+     int speedMs;
+     double cellWidth;
+     double cellHeight;
+     int width;
+     int height;
+     Color bgColor;
+     Color cellColor;
+     Cell rules;
+     AnimationTimer timer;
+     Color[] colors;
+     long lastFrame;
+     ExecutorService executorService;
 
     @FXML
     void playTButtonPressed() throws InterruptedException {
@@ -109,7 +109,8 @@ public class GameController {
         RandomGenerator rnd=RandomGenerator.getDefault();
         for(int i=0;i<height;i++){
             for(int j=0;j<width;j++){
-                c= new ConwayCell(rnd.nextDouble() < density);
+                c=rules.getDefault();
+                c.setLive(rnd.nextDouble() < density);
                 game.setCellAtIndex(i,j,c);
             }
         }
@@ -120,44 +121,11 @@ public class GameController {
     @FXML
     public void resetGame(){
         stopGame();
-        game=new Game(height,width,new ConwayCell());
+        game=new Game(height,width,rules.getDefault());
         updateMatrix();
     }
 
     public void updateMatrix(){
-       if(rules.getClass().getName().equals("com.simosera.gamesoflife.HexCell")){
-           updateMatrixHexagons();
-       }else{
-           updateMatrixSquares();
-       }
-    }
-    public void updateMatrixHexagons(){
-        matrixPane.getChildren().clear();
-        double r = cellHeight/2* 1.28; // the inner radius from hexagon center to outer corner
-        double n = r; // the inner radius from hexagon center to middle of the axis
-        for(int i=0;i< game.getHeight();i++){
-            for(int j=0;j<game.getWidth();j++){
-                Polygon poly;
-                poly=new Polygon();
-                double x =j* 2 * n + (i % 2) * n ;
-                double y=i * 2 * r * 0.75;
-                poly.getPoints().addAll(x, y,
-                        x, y + r,
-                        x + n, y + r * 1.5,
-                        x + 2 * n, y + r,
-                        x + 2 * r, y,
-                        x + n, y - r * 0.5);
-                if(game.getCellFromIndex(i,j).isLive()){
-                    poly.setFill(colors[min(3,game.getCellFromIndex(i,j).getNeighboursCount())]);
-                }else{
-                    poly.setFill(Color.WHITE);
-                }
-                poly.setStroke(Color.GREY);
-                matrixPane.getChildren().add(poly);
-            }
-        }
-    }
-    public void updateMatrixSquares(){
         matrixPane.getChildren().clear();
         for(int i=0;i< game.getHeight();i++){
             for(int j=0;j<game.getWidth();j++){
@@ -185,7 +153,7 @@ public class GameController {
         colors[1]=Color.YELLOWGREEN;
         colors[2]=Color.ORANGE;
         colors[3]=Color.RED;
-        this.rules=comboIndexToCell(rules);
+        this.rules=new ConwayCell();// to replace with actual rules int
         initializeAll();
     }
 
@@ -197,24 +165,6 @@ public class GameController {
     public void stopGame(){
         started=false;
         timer.stop();
-    }
-
-    private Cell comboIndexToCell(int i){
-        Cell c;
-        switch (i){
-            case 0:
-                c= new ConwayCell();
-                break;
-            case 1:
-                c=new HexCell();
-                break;
-            case 2:
-                c=new ConwayCell();
-                break;
-            default:
-                c= new ConwayCell();
-        }
-        return c;
     }
 
 }
