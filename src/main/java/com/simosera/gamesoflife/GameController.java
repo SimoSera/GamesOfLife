@@ -3,7 +3,6 @@ package com.simosera.gamesoflife;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -13,6 +12,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
 
@@ -54,7 +54,7 @@ public class GameController {
      int numberOfRows;
      Color bgColor;
      Color cellColor;
-     Cell rules;
+     Rule rule;
      AnimationTimer timer;
      Color[] colors;
      long lastFrame;
@@ -71,7 +71,7 @@ public class GameController {
 
     public void initializeAll(){
         started=false;
-        game=new Game(numberOfRows, cellsPerRow,rules);
+        game=new Game(numberOfRows, cellsPerRow,rule);
         speedMs=(int)(1000/speedSlider.getValue());
         lastFrame=0;
         timer = new AnimationTimer() {
@@ -97,7 +97,7 @@ public class GameController {
         int i,j;
         i=(int)(event.getY()/cellHeight);
         j=(int) (event.getX()/cellWidth);
-        Cell c=rules.getDefault();
+        Cell c=new Cell(rule);
         c.setLive(!game.getCellFromIndex(i,j).isLive());
         game.setCellAtIndex(i, j, c);
         game.countNeighbours();
@@ -115,7 +115,7 @@ public class GameController {
         RandomGenerator rnd=RandomGenerator.getDefault();
         for(int i = 0; i< numberOfRows; i++){
             for(int j = 0; j< cellsPerRow; j++){
-                c=rules.getDefault();
+                c=new Cell(rule);
                 c.setLive(rnd.nextDouble() < density);
                 game.setCellAtIndex(i,j,c);
             }
@@ -127,7 +127,7 @@ public class GameController {
     @FXML
     public void resetGame(){
         stopGame();
-        game=new Game(numberOfRows, cellsPerRow,rules.getDefault());
+        game=new Game(numberOfRows, cellsPerRow,rule);
         updateMatrix();
     }
 
@@ -150,17 +150,46 @@ public class GameController {
         }
     }
 
-    public void initializeCellChoosePane(ArrayList<Class> cellTypes) throws IOException {
+    public void initializeCellChoosePane(ArrayList<Rule> cellRules) throws IOException {
         FXMLLoader fxmlLoader=new FXMLLoader(GameOfLifeApplication.class.getResource("radio-selector-element.fxml"));
-        for(Class c : cellTypes){
+        for(Rule c : cellRules){
             Pane option = fxmlLoader.load();
             option.getChildren().stream().filter(v-> v instanceof RadioButton).forEach(r->{((RadioButton) r).setToggleGroup(tg);r.setId(c.getName());});
             option.getChildren().stream().filter(v-> v instanceof Label).forEach(l->{((Label) l).setText(c.getName());});
-            option.get
+            option.getChildren().stream().filter(v-> v instanceof Pane).forEach(p->{drawNeighboursOnPane((Pane) p);});
             chooseCellVBox.getChildren().add(option);
         }
 
     }
+
+    private void drawNeighboursOnPane(Pane p,Rule r){
+        int maxNeighbourHeight=3;
+        int maxNeighbourWidth=3;
+        List<Coordinate> neighbours=r.getNeighbours();
+        p.getChildren().clear();
+        for(int i=0;i<maxNeighbourHeight ;i++){
+            for(int j=0;j<maxNeighbourWidth;j++){
+                Rectangle rect;
+                if(game.getCellFromIndex(i,j).isLive()){
+                    rect= new Rectangle(cellWidth,cellHeight,colors[min(3,game.getCellFromIndex(i,j).getNeighboursCount())]);
+
+                }else{
+
+                }
+                rect= new Rectangle(cellWidth,cellHeight,Color.WHITE);
+                rect.setStroke(Color.GREY);
+                rect.setX(j*cellWidth);
+                rect.setY(i*cellHeight);
+                p.getChildren().add(rect);
+            }
+        }
+        for(Coordinate c : neighbours){
+            ((Rectangle)p.getChildren().get(c.x+c.y*maxNeighbourWidth)).setFill(Color.);
+        }
+
+
+    }
+
     public void initData(int width, int height, Color cellColor, Color bgColor,int rules){
         this.cellsPerRow =width;
         this.numberOfRows =height;
@@ -171,7 +200,7 @@ public class GameController {
         colors[1]=Color.YELLOWGREEN;
         colors[2]=Color.ORANGE;
         colors[3]=Color.RED;
-        this.rules=new ConwayCell();// to replace with actual rules int
+        this.rule=Rule.getConwayRule();// to replace with actual rules int
         initializeAll();
     }
 

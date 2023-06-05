@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Abstract class that defines the basics of game of life
+ * Class that defines the basics of game of life
  * This class doesn't implement any version of game of life
  */
 public class Game {
@@ -31,13 +31,13 @@ public class Game {
         countNeighbours();
     }
 
-    public Game(int height, int width,Cell cell){
+    public Game(int height, int width, Rule rule){
         this.height=height;
         this.width=width;
         this.cells=new Cell[height][width];
         for(int i=0;i<height;i++) {
             for (int j = 0; j < width; j++) {
-                this.cells[i][j] = cell.getDefault();
+                this.cells[i][j] = new Cell(rule);
             }
         }
         countNeighbours();
@@ -66,7 +66,7 @@ public class Game {
         for(int i=0;i<cells.length;i++){
             for(int j=0;j<cells[i].length;j++){
                 sum=0;
-                for(Coordinate e : cells[i][j].neighboursRelativeCordsToCount()){
+                for(Coordinate e : cells[i][j].getRule().getNeighbours()){
                     y=(i+e.y+height)%height;
                     x=(j+e.x+width)%width;
                     sum+=cells[y][x].isLive() ? 1 : 0 ;
@@ -89,11 +89,11 @@ public class Game {
         return cells;
     }
 
-    public Cell getCellFromIndex(int i,int j){
+    public Cell getCellFromIndex(int i, int j){
         return cells[i][j];
     }
 
-    public void setCellAtIndex(int i,int j,Cell c){
+    public void setCellAtIndex(int i, int j, Cell c){
         cells[i][j]=c;
     }
 
@@ -110,7 +110,7 @@ public class Game {
         int y;
         for(int j=0;j<cells[i].length;j++){
             sum=0;
-            for(Coordinate e : cells[i][j].neighboursRelativeCordsToCount()){
+            for(Coordinate e : cells[i][j].getRule().getNeighbours()){
                 y=(i+e.y+height)%height;
                 x=(j+e.x+width)%width;
                 sum+=cells[y][x].isLive() ? 1 : 0 ;

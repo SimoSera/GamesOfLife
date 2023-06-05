@@ -3,7 +3,7 @@ package com.simosera.gamesoflife;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HexCell extends Cell{
+public class HexCell extends AbstractCell {
     boolean rowIsEven; //true=the row it's in is even false=the row it's on is odd
     public HexCell(boolean live,boolean rowIsEven) {
         super(live);
@@ -37,7 +37,7 @@ public class HexCell extends Cell{
     }
 
     @Override
-    public Cell getDefault() {
+    public AbstractCell getDefault() {
         return new HexCell();
     }
 

@@ -16,7 +16,7 @@ public class HexGameController extends GameController{
     public void initializeAll(){
         this.rules=new HexCell();  //to replace in the future maybe
         started=false;
-        game=new Game(numberOfRows, cellsPerRow,rules);
+        game=new HexGame(numberOfRows, cellsPerRow,rules);
         speedMs=(int)(1000/speedSlider.getValue());
         lastFrame=0;
         timer = new AnimationTimer() {
