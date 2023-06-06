@@ -7,23 +7,22 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="187.0" prefWidth="230.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="203.0" prefWidth="234.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <left>
-      <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="22.0" BorderPane.alignment="CENTER">
+      <RadioButton minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="17.0" prefWidth="22.0" BorderPane.alignment="CENTER">
          <padding>
             <Insets left="5.0" right="5.0" />
          </padding>
       </RadioButton>
    </left>
    <top>
-      <Label prefHeight="24.0" prefWidth="24.0" text="Cell" BorderPane.alignment="CENTER">
+      <Label contentDisplay="CENTER" prefHeight="24.0" prefWidth="150.0" style="-fx-alignment: center;" text="Cell" textAlignment="CENTER" BorderPane.alignment="CENTER">
          <font>
             <Font size="14.0" />
          </font>
       </Label>
    </top>
    <center>
-      <Pane prefHeight="170.0" prefWidth="187.0" BorderPane.alignment="CENTER" />
+      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="180.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

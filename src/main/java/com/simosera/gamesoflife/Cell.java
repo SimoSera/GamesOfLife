@@ -19,6 +19,6 @@ public class Cell extends AbstractCell{
     }
 
     public void applyRules(){
-        setLive((neighboursCount<rule.overpopulation && neighboursCount>rule.underpopulation) || neighboursCount>=rule.reliveMinimum && neighboursCount<=rule.reliveMaximum);
+        setLive((this.live && neighboursCount<rule.overpopulation && neighboursCount>rule.underpopulation) || ((!this.live)&& neighboursCount>=rule.reliveMinimum && neighboursCount<=rule.reliveMaximum));
     }
 }

@@ -29,13 +29,18 @@ public class Rule {
         reliveMinimum=0;
         neighbours=new ArrayList<>();
     }
-
+    public Rule(Rule rule) {
+        name=rule.name;
+        overpopulation=rule.overpopulation;
+        underpopulation=rule.underpopulation;
+        reliveMaximum=rule.reliveMaximum;
+        reliveMinimum=rule.reliveMinimum;
+        neighbours=List.copyOf(rule.neighbours);
+    }
     public boolean dataCheck(){
-        if(reliveMinimum>reliveMaximum ||
-                overpopulation<underpopulation ||
-                overpopulation>neighbours.size())
-            return false;
-        return true;
+        return reliveMinimum <= reliveMaximum &&
+                overpopulation >= underpopulation &&
+                overpopulation <= neighbours.size();
     }
 
     public void setName(String s){
@@ -84,6 +89,9 @@ public class Rule {
     public void addNeighbour(Coordinate n) {
         neighbours.add(n);
     }
+    public void removeNeighbour(Coordinate coordinate){
+        neighbours.removeIf(coordinate::equals);
+    }
     public void setNeighbours(List<Coordinate> neighbours) {
         this.neighbours = neighbours;
     }
@@ -96,5 +104,49 @@ public class Rule {
                 new Coordinate(1,-1),new Coordinate(1,0),
                 new Coordinate(1,1)));
     }
+
+    public static Rule getNeumannRule(){
+        return new Rule("von Neumann",4,1,2,2,
+                List.of(new Coordinate(0,-1),
+                        new Coordinate(0,1),new Coordinate(-1,0),
+                        new Coordinate(1,0)));
+    }
+
+    public static Rule getConwayHexRule(){
+        return new Rule("Conway Hexagonal",3,1,2,2,
+                List.of(new Coordinate(1,-1),
+                new Coordinate(0,-1),new Coordinate(-1,0),
+                new Coordinate(1,0),new Coordinate(1,1),
+                new Coordinate(0,1)));
+    }
+
+
+
+    public  Rule getHexOddRuleFromEven(){
+         Rule rule= new Rule(this);
+         rule.setNeighbours(new ArrayList<>());
+         this.neighbours.forEach(c->{
+             if(c.y%2!=0)
+                 rule.addNeighbour(new Coordinate(c.x+1,c.y));
+             else
+                 rule.addNeighbour(new Coordinate(c.x,c.y));
+         });
+         return rule;
+    }
+    public  Rule getHexEvenRuleFromOdd(){
+        Rule rule= new Rule(this);
+        rule.setNeighbours(new ArrayList<>());
+        this.neighbours.forEach(c->{
+            if(c.y%2!=0)
+                rule.addNeighbour(new Coordinate(c.x-1,c.y));
+            else
+                rule.addNeighbour(new Coordinate(c.x,c.y));
+        });
+        return rule;
+    }
+    public boolean isNeighbour(Coordinate coordinate){
+        return neighbours.stream().anyMatch(coordinate::equals);
+    }
+
 
 }

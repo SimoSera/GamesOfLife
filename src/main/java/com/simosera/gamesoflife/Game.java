@@ -1,6 +1,7 @@
 package com.simosera.gamesoflife;
 
 
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,31 +14,13 @@ public class Game {
     int height;
     Cell[][] cells;
 
-    /**
-     *  Constructor for the Game class
-     * @param height number of cells in the y-axis
-     * @param width  number of cells in the x-axis
-     * @param cells cells bi dimensional array (2D array)
-     */
-    public Game(int height, int width, Cell[][] cells){
+    public Game(int height, int width, Rule defaultRule){
         this.height=height;
         this.width=width;
         this.cells=new Cell[height][width];
         for(int i=0;i<height;i++) {
             for (int j = 0; j < width; j++) {
-                this.cells[i][j] =cells[i][j];
-            }
-        }
-        countNeighbours();
-    }
-
-    public Game(int height, int width, Rule rule){
-        this.height=height;
-        this.width=width;
-        this.cells=new Cell[height][width];
-        for(int i=0;i<height;i++) {
-            for (int j = 0; j < width; j++) {
-                this.cells[i][j] = new Cell(rule);
+                this.cells[i][j] = new Cell(defaultRule);
             }
         }
         countNeighbours();

@@ -1,27 +1,30 @@
 package com.simosera.gamesoflife;
 
 import javafx.animation.AnimationTimer;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
+import javafx.scene.shape.Shape;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
-
 import static java.lang.Math.min;
 
 public class GameController {
     ToggleGroup tg;
     @FXML
-    private VBox chooseCellVBox;
+    VBox chooseCellVBox;
     @FXML
     Label stepsPerSecondLbl;
     @FXML
@@ -30,20 +33,13 @@ public class GameController {
     @FXML
      ToggleButton playTButton;
 
-    @FXML
-     Button setBut;
 
     @FXML
      Slider speedSlider;
 
     @FXML
-     Button randomGenerateButton;
-
-    @FXML
      Slider densitySlider;
 
-    @FXML
-     Button clearButton;
 
      boolean started;
      Game game;
@@ -52,13 +48,12 @@ public class GameController {
      double cellHeight;
      int cellsPerRow;
      int numberOfRows;
-     Color bgColor;
-     Color cellColor;
-     Rule rule;
+     Rule selectedRule;
      AnimationTimer timer;
      Color[] colors;
      long lastFrame;
      ExecutorService executorService;
+    HashMap<String,Rule>  availableRules;
 
     @FXML
     void playTButtonPressed() {
@@ -69,9 +64,28 @@ public class GameController {
         }
     }
 
-    public void initializeAll(){
+    public void initData(int height) throws IOException {
+        this.numberOfRows =height;
+        colors=new Color[5];
+        colors[0]=Color.GREEN;
+        colors[1]=Color.YELLOWGREEN;
+        colors[2]=Color.ORANGE;
+        colors[3]=Color.RED;
+        initializeAll();
+    }
+    public void initializeAll() throws IOException {
         started=false;
-        game=new Game(numberOfRows, cellsPerRow,rule);
+        playTButton.setBackground(new Background(
+                new BackgroundImage(new Image(Objects.requireNonNull(getClass().getResource("Icons/play-icon.png")).toString()),
+                        BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,
+                        new BackgroundSize(100,100,true,true,true,false)))
+        );
+        tg=new ToggleGroup();
+        availableRules=new HashMap<>();
+        initShapeData();
+        initializeCellChoosePane();
+        tg.selectedToggleProperty().addListener(toggleGroupChangedSelection());
+        tg.getToggles().get(availableRules.size()-1).setSelected(true);
         speedMs=(int)(1000/speedSlider.getValue());
         lastFrame=0;
         timer = new AnimationTimer() {
@@ -86,26 +100,45 @@ public class GameController {
                 }
             }
         };
-
-        cellWidth=1000/(double) cellsPerRow;
-        cellHeight=500/(double) numberOfRows;
+        speedSlider.valueProperty().addListener(speedChanged());
+        initGame();
         updateMatrix();
     }
 
-    @FXML
-    public void clickAddCell(MouseEvent event) {
-        int i,j;
-        i=(int)(event.getY()/cellHeight);
-        j=(int) (event.getX()/cellWidth);
-        Cell c=new Cell(rule);
-        c.setLive(!game.getCellFromIndex(i,j).isLive());
-        game.setCellAtIndex(i, j, c);
+    public void initShapeData(){
+        availableRules.putAll(Map.of(Rule.getConwayRule().getName(), Rule.getConwayRule()
+                ,Rule.getNeumannRule().getName(),Rule.getNeumannRule()));
+        this.cellsPerRow=(int)(numberOfRows*(matrixPane.getPrefWidth()/matrixPane.getPrefHeight()));
+        cellWidth=matrixPane.getPrefWidth()/cellsPerRow;
+        cellHeight=matrixPane.getPrefHeight()/numberOfRows;
+    }
+    public ChangeListener<Toggle> toggleGroupChangedSelection(){
+        return (observable, oldValue, newValue) -> {
+            RadioButton button;
+            if((button=(RadioButton) tg.getSelectedToggle())!=null){
+                if(availableRules.containsKey(button.getId())){
+                    selectedRule=availableRules.get(button.getId());
+                }
+            }
+            resetGame();
+        };
+    }
+    public void initGame(){
+        game=new Game(numberOfRows, cellsPerRow,selectedRule);
+    }
+
+    public void cellClicked(int i,int j){
+        Cell c=game.getCellFromIndex(i,j);
+        c.setRule(selectedRule);
+        game.setCellAtIndex(i,j,c);
+        game.getCellFromIndex(i,j).setLive(!game.getCellFromIndex(i,j).isLive());
         game.countNeighbours();
         updateMatrix();
     }
-    @FXML
-    public void speedSetter(){
-        speedMs=(int)(1000/speedSlider.getValue());
+    public ChangeListener<Number> speedChanged(){
+        return (observable, oldValue, newValue) -> {
+            speedMs=(int)(1000/speedSlider.getValue());
+        };
     }
 
     @FXML
@@ -115,9 +148,11 @@ public class GameController {
         RandomGenerator rnd=RandomGenerator.getDefault();
         for(int i = 0; i< numberOfRows; i++){
             for(int j = 0; j< cellsPerRow; j++){
-                c=new Cell(rule);
-                c.setLive(rnd.nextDouble() < density);
-                game.setCellAtIndex(i,j,c);
+                if(!game.getCellFromIndex(i,j).isLive()){
+                    c=new Cell(selectedRule);
+                    c.setLive(rnd.nextDouble() < density);
+                    game.setCellAtIndex(i,j,c);
+                }
             }
         }
         game.countNeighbours();
@@ -127,90 +162,106 @@ public class GameController {
     @FXML
     public void resetGame(){
         stopGame();
-        game=new Game(numberOfRows, cellsPerRow,rule);
+        playTButton.setSelected(false);
+        initGame();
         updateMatrix();
+    }
+    @FXML
+    public void openCreateNewRuleStage() throws IOException {
+        FXMLLoader fxmlLoader=new FXMLLoader(GameOfLifeApplication.class.getResource("create-cell-rule-view.fxml"));
+        fxmlLoader.load();
+        Stage stage=fxmlLoader.getRoot();
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        Rule rule=new Rule();
+        ((CustomRuleController)fxmlLoader.getController()).initData(rule,game);
+        stage.showAndWait();
+        if(rule.name.length()>0){
+            availableRules.put(rule.name,rule);
+            addRuleToChoosePane(rule);
+        }
+        tg.getToggles().get(availableRules.size()-1).setSelected(true);
     }
 
     public void updateMatrix(){
         matrixPane.getChildren().clear();
         for(int i=0;i< game.getHeight();i++){
             for(int j=0;j<game.getWidth();j++){
-                Rectangle rect;
+                Shape shape;
                 if(game.getCellFromIndex(i,j).isLive()){
-                    rect= new Rectangle(cellWidth,cellHeight,colors[min(3,game.getCellFromIndex(i,j).getNeighboursCount())]);
-
+                    shape= getShape(i,j,cellWidth,cellHeight,colors[min(3,game.getCellFromIndex(i,j).getNeighboursCount())]);
                 }else{
-                    rect= new Rectangle(cellWidth,cellHeight,Color.WHITE);
+                    shape= getShape(i,j,cellWidth,cellHeight,Color.WHITE);
                 }
-                rect.setStroke(Color.GREY);
-                rect.setX(j*cellWidth);
-                rect.setY(i*cellHeight);
-                matrixPane.getChildren().add(rect);
+                final int final1=i,final2=j;
+                shape.setOnMouseClicked(event->cellClicked(final1, final2));
+                matrixPane.getChildren().add(shape);
             }
         }
     }
+    public static Shape staticGetShape(int i, int j,double width,double height, Color color){
+        Rectangle rect;
+        rect=new Rectangle(width,height);
+        rect.setFill(color);
+        rect.setStroke(Color.GREY);
+        rect.setX(j*width);
+        rect.setY(i*height);
+        return rect;
+    }
+    public Shape getShape(int i, int j,double width,double height, Color color){
+        return staticGetShape(i,j,width,height,color);
+    }
 
-    public void initializeCellChoosePane(ArrayList<Rule> cellRules) throws IOException {
-        FXMLLoader fxmlLoader=new FXMLLoader(GameOfLifeApplication.class.getResource("radio-selector-element.fxml"));
-        for(Rule c : cellRules){
-            Pane option = fxmlLoader.load();
-            option.getChildren().stream().filter(v-> v instanceof RadioButton).forEach(r->{((RadioButton) r).setToggleGroup(tg);r.setId(c.getName());});
-            option.getChildren().stream().filter(v-> v instanceof Label).forEach(l->{((Label) l).setText(c.getName());});
-            option.getChildren().stream().filter(v-> v instanceof Pane).forEach(p->{drawNeighboursOnPane((Pane) p);});
-            chooseCellVBox.getChildren().add(option);
+    public void initializeCellChoosePane() throws IOException {
+        for(Map.Entry<String,Rule> entry : availableRules.entrySet()){
+            addRuleToChoosePane(entry.getValue());
         }
-
+    }
+    public void addRuleToChoosePane(Rule rule) throws IOException{
+        FXMLLoader fxmlLoader;
+        fxmlLoader=new FXMLLoader(GameOfLifeApplication.class.getResource("radio-selector-element.fxml"));
+        Pane option = fxmlLoader.load();
+        option.getChildren().stream().filter(v-> v instanceof RadioButton).forEach(r->{((RadioButton) r).setToggleGroup(tg);r.setId(rule.getName());});
+        option.getChildren().stream().filter(v-> v instanceof Label).forEach(l-> ((Label) l).setText(rule.getName()));
+        option.getChildren().stream().filter(v-> v instanceof Pane).forEach(p-> drawNeighboursOnPane((Pane) p,rule));
+        chooseCellVBox.getChildren().add(option);
     }
 
     private void drawNeighboursOnPane(Pane p,Rule r){
-        int maxNeighbourHeight=3;
-        int maxNeighbourWidth=3;
         List<Coordinate> neighbours=r.getNeighbours();
+        int size=CustomRuleController.maxNeighbourhoodSize;
+        double cWidth=p.getPrefWidth()/size;
+        double cHeight=p.getPrefHeight()/size;
         p.getChildren().clear();
-        for(int i=0;i<maxNeighbourHeight ;i++){
-            for(int j=0;j<maxNeighbourWidth;j++){
-                Rectangle rect;
-                if(game.getCellFromIndex(i,j).isLive()){
-                    rect= new Rectangle(cellWidth,cellHeight,colors[min(3,game.getCellFromIndex(i,j).getNeighboursCount())]);
-
-                }else{
-
-                }
-                rect= new Rectangle(cellWidth,cellHeight,Color.WHITE);
-                rect.setStroke(Color.GREY);
-                rect.setX(j*cellWidth);
-                rect.setY(i*cellHeight);
-                p.getChildren().add(rect);
+        for(int i=0;i<size ;i++){
+            for(int j=0;j<size;j++){
+                Shape s=getShape(i,j,cWidth,cHeight,Color.WHITE);
+                p.getChildren().add(s);
             }
         }
         for(Coordinate c : neighbours){
-            ((Rectangle)p.getChildren().get(c.x+c.y*maxNeighbourWidth)).setFill(Color.);
+            ((Shape)p.getChildren().get(c.x+(size/2)+(c.y+size/2)*size)).setFill(Color.BLACK);
         }
-
-
+        ((Shape)p.getChildren().get(size/2*size+size/2)).setFill(Color.RED);
     }
-
-    public void initData(int width, int height, Color cellColor, Color bgColor,int rules){
-        this.cellsPerRow =width;
-        this.numberOfRows =height;
-        this.cellColor=cellColor;
-        this.bgColor=bgColor;
-        colors=new Color[5];
-        colors[0]=Color.GREEN;
-        colors[1]=Color.YELLOWGREEN;
-        colors[2]=Color.ORANGE;
-        colors[3]=Color.RED;
-        this.rule=Rule.getConwayRule();// to replace with actual rules int
-        initializeAll();
-    }
-
 
     public void startGame() {
         started=true;
+        playTButton.setBackground(new Background(
+                new BackgroundImage(new Image(Objects.requireNonNull(getClass().getResource("Icons/pause-icon.png")).toString()),
+                        BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,
+                        new BackgroundSize(100,100,true,true,true,false)))
+        );
         timer.start();
+
     }
     public void stopGame(){
         started=false;
+        playTButton.setBackground(new Background(
+                new BackgroundImage(new Image(Objects.requireNonNull(getClass().getResource("Icons/play-icon.png")).toString()),
+                        BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,
+                        new BackgroundSize(100,100,true,true,true,false)))
+        );
         timer.stop();
     }
 

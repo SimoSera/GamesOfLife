@@ -1,6 +1,5 @@
 package com.simosera.gamesoflife;
 
-import java.util.List;
 
 public abstract class AbstractCell {
     int neighboursCount;
@@ -18,7 +17,7 @@ public abstract class AbstractCell {
     public AbstractCell(Rule rule) {
         this.live=false;
         neighboursCount=0;
-        rule=null;
+        this.rule=rule;
     }
 
     public AbstractCell(AbstractCell c) {

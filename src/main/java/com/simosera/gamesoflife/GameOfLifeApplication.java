@@ -12,6 +12,7 @@ public class GameOfLifeApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("menu-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage.setResizable(false);
         stage.setTitle("Game Of Life");
         stage.setScene(scene);
         stage.show();
