@@ -1,7 +1,6 @@
 package com.simosera.gamesoflife;
 
 
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,13 +25,6 @@ public class Game {
         countNeighbours();
     }
 
-    /**
-     *    Method that computes the next step in the game of life using the ruleConsumer
-     */
-    public void nextStep(){
-        updateCellsLiveState();
-        countNeighbours();
-    }
 
     private void updateCellsLiveState(){
         for(int i=0;i<height;i++)
@@ -66,10 +58,6 @@ public class Game {
 
     public int getHeight() {
         return height;
-    }
-
-    public Cell[][] getCells() {
-        return cells;
     }
 
     public Cell getCellFromIndex(int i, int j){

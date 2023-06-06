@@ -40,9 +40,10 @@ public class CustomRuleController {
     IntegerSpinnerValueFactory minReproductionFactory;
     IntegerSpinnerValueFactory maxReproductionFactory;
 
-    Game g;
+    GetShapeFunction getShape;
 
-    public void initData(Rule rule,Game g){
+    public void initData(Rule rule,GetShapeFunction getShape){
+        this.getShape=getShape;
         customRule=rule;
         underpopulationFactory=new IntegerSpinnerValueFactory(0,0,0);
         underpopulationFactory.valueProperty().addListener((observable, oldValue, newValue) -> updateFactories());
@@ -88,21 +89,16 @@ public class CustomRuleController {
         for(int i=0;i<maxNeighbourhoodSize ;i++){
             for(int j=0;j<maxNeighbourhoodSize;j++){
                 Shape sh;
-                if(g instanceof HexGame){
-                    sh=HexGameController.staticGetShape(i,j,cellWidth,cellHeight,Color.WHITE);
-                }else{
-                    sh=GameController.staticGetShape(i,j,cellWidth,cellHeight,Color.WHITE);
-                }
-
-                int finali=i,finalj=j;
-                sh.setOnMouseClicked(event->cellClicked(finali,finalj));
+                final int finalI=i,finalJ=j;
+                sh=getShape.apply(i,j,cellWidth,cellHeight,Color.WHITE);
+                sh.setOnMouseClicked(event->cellClicked(finalI,finalJ));
                 neighbourSelectionPanel.getChildren().add(sh);
             }
         }
         for(Coordinate c : customRule.neighbours){
-            ((Rectangle)neighbourSelectionPanel.getChildren().get(c.x+(maxNeighbourhoodSize/2)+(c.y+maxNeighbourhoodSize/2)*maxNeighbourhoodSize)).setFill(Color.BLACK);
+            ((Shape)neighbourSelectionPanel.getChildren().get(c.x+(maxNeighbourhoodSize/2)+(c.y+maxNeighbourhoodSize/2)*maxNeighbourhoodSize)).setFill(Color.BLACK);
         }
-        ((Rectangle)neighbourSelectionPanel.getChildren().get(maxNeighbourhoodSize/2*maxNeighbourhoodSize+maxNeighbourhoodSize/2)).setFill(Color.RED);
+        ((Shape)neighbourSelectionPanel.getChildren().get(maxNeighbourhoodSize/2*maxNeighbourhoodSize+maxNeighbourhoodSize/2)).setFill(Color.RED);
     }
     @FXML
     public void saveButtonPressed(Event eevent){
@@ -116,5 +112,7 @@ public class CustomRuleController {
         customRule.setName(name);
         ((Node) eevent.getSource()).getScene().getWindow().hide(); //close
     }
+
+
 
 }

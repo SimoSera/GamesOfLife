@@ -82,10 +82,7 @@ public class GameController {
         );
         tg=new ToggleGroup();
         availableRules=new HashMap<>();
-        initShapeData();
-        initializeCellChoosePane();
-        tg.selectedToggleProperty().addListener(toggleGroupChangedSelection());
-        tg.getToggles().get(availableRules.size()-1).setSelected(true);
+
         speedMs=(int)(1000/speedSlider.getValue());
         lastFrame=0;
         timer = new AnimationTimer() {
@@ -100,6 +97,10 @@ public class GameController {
                 }
             }
         };
+        initShapeData();
+        initializeCellChoosePane();
+        tg.selectedToggleProperty().addListener(toggleGroupChangedSelection());
+        tg.getToggles().get(availableRules.size()-1).setSelected(true);
         speedSlider.valueProperty().addListener(speedChanged());
         initGame();
         updateMatrix();
@@ -136,9 +137,7 @@ public class GameController {
         updateMatrix();
     }
     public ChangeListener<Number> speedChanged(){
-        return (observable, oldValue, newValue) -> {
-            speedMs=(int)(1000/speedSlider.getValue());
-        };
+        return (observable, oldValue, newValue) -> speedMs=(int)(1000/speedSlider.getValue());
     }
 
     @FXML
@@ -174,7 +173,7 @@ public class GameController {
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         Rule rule=new Rule();
-        ((CustomRuleController)fxmlLoader.getController()).initData(rule,game);
+        ((CustomRuleController)fxmlLoader.getController()).initData(rule, this::getShape);
         stage.showAndWait();
         if(rule.name.length()>0){
             availableRules.put(rule.name,rule);
@@ -199,7 +198,8 @@ public class GameController {
             }
         }
     }
-    public static Shape staticGetShape(int i, int j,double width,double height, Color color){
+
+    public Shape getShape(int i, int j,double width,double height, Color color){
         Rectangle rect;
         rect=new Rectangle(width,height);
         rect.setFill(color);
@@ -207,9 +207,6 @@ public class GameController {
         rect.setX(j*width);
         rect.setY(i*height);
         return rect;
-    }
-    public Shape getShape(int i, int j,double width,double height, Color color){
-        return staticGetShape(i,j,width,height,color);
     }
 
     public void initializeCellChoosePane() throws IOException {

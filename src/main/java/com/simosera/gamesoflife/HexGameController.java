@@ -4,11 +4,8 @@ package com.simosera.gamesoflife;
 import javafx.fxml.FXML;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
-
-import static java.lang.Math.min;
 
 public class HexGameController extends GameController {
     public void initShapeData(){
@@ -21,7 +18,7 @@ public class HexGameController extends GameController {
     public void initGame(){
         game=new HexGame(numberOfRows, cellsPerRow,selectedRule);
     }
-    public static Shape staticGetShape(int i, int j,double width,double height, Color color){
+    public Shape getShape(int i, int j,double width,double height, Color color){
         double r = height/2; // the inner radius from hexagon center to outer corner
         double n = width/2; // the inner radius from hexagon center to middle of the axis
         Polygon hexagon;
@@ -37,10 +34,6 @@ public class HexGameController extends GameController {
         hexagon.setFill(color);
         hexagon.setStroke(Color.GREY);
         return hexagon;
-    }
-
-    public Shape getShape(int i, int j,double width,double height, Color color){
-        return staticGetShape(i,j,width,height,color);
     }
 
 

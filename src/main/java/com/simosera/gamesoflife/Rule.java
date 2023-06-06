@@ -114,9 +114,9 @@ public class Rule {
 
     public static Rule getConwayHexRule(){
         return new Rule("Conway Hexagonal",3,1,2,2,
-                List.of(new Coordinate(1,-1),
+                List.of(new Coordinate(-1,-1),
                 new Coordinate(0,-1),new Coordinate(-1,0),
-                new Coordinate(1,0),new Coordinate(1,1),
+                new Coordinate(1,0),new Coordinate(-1,1),
                 new Coordinate(0,1)));
     }
 
