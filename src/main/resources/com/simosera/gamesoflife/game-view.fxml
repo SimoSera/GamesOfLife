@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
@@ -27,10 +28,12 @@ assigned in MenuController depending on the version of the game selected (Standa
             <Label layoutX="873.0" layoutY="49.0" text="Actual SPS: " />
             <Label fx:id="stepsPerSecondLbl" layoutX="952.0" layoutY="47.0" />
             <Button fx:id="clearButton" layoutX="344.0" layoutY="45.0" mnemonicParsing="false" onAction="#resetGame" text="Clear" />
-            <Button fx:id="randomGenerateButton" layoutX="113.0" layoutY="81.0" mnemonicParsing="false" onAction="#randomCellsGenerator" text="Randomly Generate" />
-            <Slider fx:id="densitySlider" layoutX="96.0" layoutY="33.0" max="99.0" min="1.0" minorTickCount="5" prefHeight="38.0" prefWidth="154.0" showTickLabels="true" showTickMarks="true" value="20.0" />
-            <Label layoutX="153.0" layoutY="15.0" text="Density" />
+            <Button fx:id="randomGenerateButton" layoutX="170.0" layoutY="85.0" mnemonicParsing="false" onAction="#randomCellsGenerator" text="Randomly Generate" />
+            <Slider fx:id="densitySlider" layoutX="153.0" layoutY="37.0" max="99.0" min="1.0" minorTickCount="5" prefHeight="38.0" prefWidth="154.0" showTickLabels="true" showTickMarks="true" value="20.0" />
+            <Label layoutX="210.0" layoutY="19.0" text="Density" />
             <Button layoutX="1048.0" layoutY="-1.0" mnemonicParsing="false" onAction="#openCreateNewRuleStage" prefHeight="49.0" prefWidth="242.0" text="Create new rule" />
+            <Button layoutX="14.0" layoutY="85.0" mnemonicParsing="false" onAction="#backButtonPressed" text="Back" />
+            <CheckBox fx:id="colorsCheckBox" layoutX="1096.0" layoutY="77.0" mnemonicParsing="false" onAction="#colorsCheckBoxChanged" text="Rainbow colors" />
          </children>
       </AnchorPane>
    </bottom>

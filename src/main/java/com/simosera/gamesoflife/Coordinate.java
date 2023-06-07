@@ -4,8 +4,8 @@ import java.util.Objects;
 
 /**
  * Coordinate is used to describe the
- * relative position of the neighbouring cells
- * in the Rule class
+ * relative position of the neighbouring cells.
+ * in the {@link Rule} class
  * @see Rule
  * @author Simone Serafini
  * @version 2023.06.07
@@ -17,7 +17,7 @@ public class Coordinate {
     int y;
 
     /**
-     * Initialize a new Coordinate
+     * Initialize a new {@link Coordinate}
      * @param x the x position (horizontal)
      * @param y the y position (vertical)
      */
@@ -27,7 +27,7 @@ public class Coordinate {
     }
 
     /**
-     * Initialize a new Coordinate
+     * Initialize a new {@link Coordinate}.
      * Default constructor, x=0 and y=0
      */
     public Coordinate() {
@@ -53,7 +53,7 @@ public class Coordinate {
 
     /**
      * Equals method for comparing two Coordinates by the values.
-     * @param o Coordinate object to compare with this
+     * @param o {@link Coordinate} object to compare with this
      * @return true if they are equal, false otherwise
      */
     @Override

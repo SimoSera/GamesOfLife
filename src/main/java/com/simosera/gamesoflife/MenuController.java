@@ -64,7 +64,7 @@ public class MenuController {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Game Of Life");
         stage.setResizable(false);
-        gameController.initData(height);
+        gameController.initializeAll(height);
         stage.setScene(scene);
         stage.show();
     }

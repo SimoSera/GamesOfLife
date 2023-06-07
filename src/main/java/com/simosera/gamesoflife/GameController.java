@@ -2,8 +2,11 @@ package com.simosera.gamesoflife;
 
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -13,16 +16,13 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.random.RandomGenerator;
 import static java.lang.Math.min;
 
 /**
- * Controller for the main view, it manages the game
+ * Controller for the main game view, it manages the {@link Game}
  * and the timing and many other things
  * @author Simone Serafini
  * @version 2023.06.07
@@ -32,6 +32,17 @@ public class GameController {
     static final double NANOSECONDS_IN_A_SECOND = 1.0E9;
     static final double MILLISECOND_IN_A_SECOND = 1000;
 
+    /** {@link Color} That will be used for the cells if rainbow
+     * {@link CheckBox} is not selected
+     */
+    static final Color defaultColor=Color.BLACK;
+
+    /** {@link Color}s That will be used for the cells if rainbow
+     * {@link CheckBox} is selected
+     */
+    static final List<Color> rainbowColors = List.of(Color.RED, Color.ORANGE, new Color(0.97,0.85,0,1),
+            new Color(0.1,0.7,0.1,0.8),  new Color(0.1,0.35,1,0.8), new Color(0.29,0,0.51,0.8), new Color(0.4,0.1,0.7,0.8));
+
     @FXML
     VBox chooseCellVBox;
 
@@ -40,6 +51,9 @@ public class GameController {
 
     @FXML
     Pane matrixPane;
+
+    @FXML
+    CheckBox colorsCheckBox;
 
     @FXML
     ToggleButton playTButton;
@@ -56,7 +70,7 @@ public class GameController {
 
     AnimationTimer timer;
 
-    Color[] colors;
+    List<Color> colors;
 
     ExecutorService executorService;
 
@@ -64,6 +78,8 @@ public class GameController {
     HashMap<String,Rule>  availableRules;
 
     ToggleGroup toggleGroup;
+
+
 
     boolean started;
 
@@ -80,25 +96,34 @@ public class GameController {
 
     int numberOfRows;
 
+    /**
+     * Handler for the onAction Listener of the
+     * play {@link Button}
+     */
     @FXML
     void playTButtonPressed() {
-        if(started){
+        if(started)
             stopGame();
-        }else{
+        else
             startGame();
-        }
     }
 
-    public void initData(int height) throws IOException {
+    /**
+     *
+
+
+    /**
+     *  Method called from the {@link MenuController} to pass the
+     *  parameters set in the menu view and
+     *  initializes all the attributes of this controller and of the view
+     * @param height height of the matrix, width will be calculated based on this parameter
+     * @throws IOException {@link IOException} that may be thrown by
+     *                      {@link Class} getResource
+     */
+    public void initializeAll(int height) throws IOException {
         this.numberOfRows = height;
-        colors = new Color[5];
-        colors[0] = Color.GREEN;
-        colors[1]=Color.YELLOWGREEN;
-        colors[2]=Color.ORANGE;
-        colors[3]=Color.RED;
-        initializeAll();
-    }
-    public void initializeAll() throws IOException {
+        colors=new ArrayList<>();
+        colors.add(Color.BLACK);
         started = false;
         playTButton.setBackground(new Background(
                 new BackgroundImage(new Image(Objects.requireNonNull(getClass().getResource("Icons/play-icon.png")).toString()),
@@ -131,6 +156,9 @@ public class GameController {
         updateMatrix();
     }
 
+    /**
+     *
+     */
     public void initShapeData() {
         availableRules.putAll(Map.of(Rule.getConwayRule().getName(), Rule.getConwayRule()
                 , Rule.getNeumannRule().getName(), Rule.getNeumannRule()));
@@ -214,7 +242,7 @@ public class GameController {
             for(int j = 0; j < game.getWidth(); j++){
                 Shape shape;
                 if(game.getCellFromIndex(i, j).isLive()){
-                    shape = getShape(i, j, cellWidth, cellHeight, colors[min(colors.length - 1, game.getCellFromIndex(i, j).getNeighboursCount())]);
+                    shape = getShape(i, j, cellWidth, cellHeight, colors.get(min(colors.size() - 1, game.getCellFromIndex(i, j).getNeighboursCount())));
                 }else{
                     shape = getShape(i, j,cellWidth, cellHeight, Color.WHITE);
                 }
@@ -287,6 +315,34 @@ public class GameController {
                         new BackgroundSize(100, 100, true, true, true, false)))
         );
         timer.stop();
+    }
+
+    /**
+     * Handler of the onAction Listener of the back {@link Button}.
+     * Shows the menu {@link Scene} and closes the current {@link Scene}.
+     * @param event {@link Event} object needed to get the current {@link Stage}
+     * @throws IOException {@link IOException} that can be thrown
+     *                      by {@link Class} getResource method
+     */
+    public void backButtonPressed(Event event) throws IOException {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("menu-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage.setTitle("Game Of Life");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    /**
+     * Handler for the onAction of the {@link CheckBox} colorsCheckBox.
+     * Sets the colors based on if the {@link CheckBox} is selected or
+     * not.
+     */
+    public void colorsCheckBoxChanged() {
+        if(colorsCheckBox.isSelected())
+            colors = new ArrayList<>(rainbowColors);
+        else
+            colors = new ArrayList<>(List.of(defaultColor));
     }
 
 

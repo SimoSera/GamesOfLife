@@ -1,8 +1,8 @@
 package com.simosera.gamesoflife;
 
 /**
- * Cell of the Game Of Life it applies the rules
- * defined in the rule object based on the live
+ * Cell of the game of life, it applies the rules
+ * defined in the {@link Rule} rule based on the live
  * state and the number of neighbours
  * @author Simone Serafini
  * @version 2023.06.07
@@ -18,9 +18,9 @@ public class Cell {
 
 
     /**
-     * Initialize a new Cell
+     * Initialize a new {@link Cell}
      * @param live true if cell is live, false if dead
-     * @param rule rule that this cell follows
+     * @param rule {@link Rule} that this cell will follow
      * @see Rule
      */
     public Cell(boolean live, Rule rule) {
@@ -30,8 +30,8 @@ public class Cell {
     }
 
     /**
-     * Initialize a new Cell as dead
-     * @param rule rule that this cell follows
+     * Initialize a new {@link Cell} as dead
+     * @param rule {@link Rule} that this cell follows
      * @see Rule
      */
     public Cell(Rule rule) {
@@ -41,9 +41,9 @@ public class Cell {
     }
 
     /**
-     * Initialize a new Cell
+     * Initialize a new {@link Cell}
      * Copy constructor
-     * @param cell cell to copy values from
+     * @param cell {@link Cell} to copy values from
      */
     public Cell(Cell cell) {
         this.live = cell.live;
@@ -75,7 +75,7 @@ public class Cell {
     }
 
     /**
-     * Apply the rules described in rule based on the number of neighbours (neighboursCount).
+     * Apply the rules described in this.rule based on the number of neighbours (neighboursCount).
      * @see Rule
      */
     public void applyRules() {

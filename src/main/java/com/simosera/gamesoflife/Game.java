@@ -5,10 +5,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Class that defines the general concept of
- * game of life, that is a matrix of cells it
- * counts the neighbours of each live and dead
- * cell and applies the rules of each cell
+ * Defines the general concept of
+ * game of life: a matrix of {@link Cell}.
+ * It counts the neighbours of each live and dead
+ * {@link Cell} and applies the rules of each cell
  * @author Simone Serafini
  * @version 2023.06.07
  */
@@ -21,10 +21,10 @@ public class Game {
     Cell[][] cells;
 
     /**
-     * Initialize a new Game
+     * Initialize a new {@link Game}
      * @param height number of rows
      * @param width number of cells per row
-     * @param defaultRule rule that all the cells will have
+     * @param defaultRule {@link Rule that all the cells will have
      */
     public Game(int height, int width, Rule defaultRule) {
         this.height = height;

@@ -3,6 +3,7 @@ package com.simosera.gamesoflife;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -58,7 +59,13 @@ public class CustomRuleController {
 
     double cellHeight;
 
-
+    /**
+     * Saves the parameters values and initializes the
+     * {@link IntegerSpinnerValueFactory} and {@link Spinner}.
+     * @param rule {@link Rule} where the values will be saved in
+     * @param getShape  the getShape method of the {@link GameController} that calls
+     *                  this function
+     */
     public void initData(Rule rule,GetShapeFunction getShape){
         this.getShape=getShape;
         customRule=rule;
@@ -78,6 +85,11 @@ public class CustomRuleController {
         cellHeight=neighbourSelectionPanel.getPrefHeight()/ MAX_NEIGHBOURHOOD_SIZE;
         drawNeighboursOnPane();
     }
+
+    /**
+     * Updates the {@link IntegerSpinnerValueFactory} so that the user can't select
+     * invalid numbers,like numbers bigger than the number of neighbours.
+     */
     public void updateFactories(){
         underpopulationFactory.setMax(overpopulationFactory.getValue());
         overpopulationFactory.setMin(underpopulationFactory.getValue());
@@ -91,8 +103,16 @@ public class CustomRuleController {
         underpopulationFactory.setValue(Math.min(underpopulationFactory.getValue(),customRule.getNeighbours().size()));
     }
 
-    public void cellClicked(int i,int j){
-        Coordinate coordinate=new Coordinate(j-(MAX_NEIGHBOURHOOD_SIZE /2),i-(MAX_NEIGHBOURHOOD_SIZE /2));
+    /**
+     * Handler for the Listener onMouseClicked set on the cells.
+     * When a {@link Shape} is clicked this method gets triggered, it
+     * adds/removes the neighbour from the rule and  updates the
+     * {@link IntegerSpinnerValueFactory} and the neighbourSelectionPanel.
+     * @param row
+     * @param column
+     */
+    public void cellClicked(int row,int column){
+        Coordinate coordinate=new Coordinate(column-(MAX_NEIGHBOURHOOD_SIZE /2),row-(MAX_NEIGHBOURHOOD_SIZE /2));
         if(customRule.isNeighbour(coordinate)){
             customRule.removeNeighbour(coordinate);
         }else{
@@ -101,13 +121,20 @@ public class CustomRuleController {
         updateFactories();
         drawNeighboursOnPane();
     }
+
+    /**
+     * Draws the cells on the neighbourSelectionPane using the
+     * {@link GetShapeFunction} getShape passed by the controller.
+     * that opened this stage.
+     * Also sets a onMouseClicked Listener on the cells
+     */
     private void drawNeighboursOnPane(){
         neighbourSelectionPanel.getChildren().clear();
-        for(int i = 0; i< MAX_NEIGHBOURHOOD_SIZE; i++){
-            for(int j = 0; j< MAX_NEIGHBOURHOOD_SIZE; j++){
+        for(int row = 0; row< MAX_NEIGHBOURHOOD_SIZE; row++){
+            for(int column = 0; column< MAX_NEIGHBOURHOOD_SIZE; column++){
                 Shape sh;
-                final int finalI=i,finalJ=j;
-                sh=getShape.apply(i,j,cellWidth,cellHeight,Color.WHITE);
+                final int finalI=row,finalJ=column;
+                sh=getShape.apply(row,column,cellWidth,cellHeight,Color.WHITE);
                 sh.setOnMouseClicked(event->cellClicked(finalI,finalJ));
                 neighbourSelectionPanel.getChildren().add(sh);
             }
@@ -117,8 +144,18 @@ public class CustomRuleController {
         }
         ((Shape)neighbourSelectionPanel.getChildren().get(MAX_NEIGHBOURHOOD_SIZE /2* MAX_NEIGHBOURHOOD_SIZE + MAX_NEIGHBOURHOOD_SIZE /2)).setFill(Color.RED);
     }
+
+    /**
+     * Handler for the save button pressed listener.
+     * When the save button in pressed it puts all the values
+     * and the name in the rule passed by the controller that sets
+     * the Stage.
+     * @param event {@link Event} object passed by the event listener, needed
+     *             for closing (hiding) the stage
+     * @see Button
+     */
     @FXML
-    public void saveButtonPressed(Event eevent){
+    public void saveButtonPressed(Event event){
         customRule.setOverpopulation(overpopulationFactory.getValue());
         customRule.setUnderpopulation(underpopulationFactory.getValue());
         customRule.setReliveMaximum(maxReproductionFactory.getValue());
@@ -127,7 +164,8 @@ public class CustomRuleController {
         if(name.length()<1)
             name="Custom rule";
         customRule.setName(name);
-        ((Node) eevent.getSource()).getScene().getWindow().hide(); //close
+        //the hide method is equivalent to the close method
+        ((Node) event.getSource()).getScene().getWindow().hide();
     }
 
 

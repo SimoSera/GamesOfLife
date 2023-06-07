@@ -8,20 +8,18 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * Application class that starts the app
- * and shows the menu view
+ * {@link Application} class that starts the app
+ * and shows the menu-view.fxml
  * @author Simone Serafini
  * @version 2023.06.07
  */
 public class GameOfLifeApplication extends Application {
 
     /**
-     *
-     * @param stage the primary stage for this application, onto which
-     * the application scene can be set.
-     * Applications may create other stages, if needed, but they will not be
-     * primary stages.
-     * @throws IOException
+     *  Starts the application by showing the primary menu {@link Scene}
+     *  controlled by the {@link MenuController}
+     * @param stage the primary {@link Stage} for this application.
+     * @throws IOException {@link IOException} thrown by the {@link Class} getResource method
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -34,6 +32,10 @@ public class GameOfLifeApplication extends Application {
 
     }
 
+    /**
+     * Main method that launches the app
+     * @param args Arguments ot he main method
+     */
     public static void main(String[] args) {
         launch();
     }
