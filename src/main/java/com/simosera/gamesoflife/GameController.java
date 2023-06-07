@@ -157,7 +157,8 @@ public class GameController {
     }
 
     /**
-     *
+     * Initializes some data that depends on the {@link Shape}
+     * of the game. This one is for the Square version
      */
     public void initShapeData() {
         availableRules.putAll(Map.of(Rule.getConwayRule().getName(), Rule.getConwayRule()
@@ -166,6 +167,13 @@ public class GameController {
         cellWidth = matrixPane.getPrefWidth() / cellsPerRow;
         cellHeight = matrixPane.getPrefHeight() / numberOfRows;
     }
+
+    /**
+     * Listener that defines the Handler for when the {@link RadioButton}
+     * that is selected has changed in the {@link ToggleGroup}.
+     * @return ChangeListener to set the toggle value Listener to.
+     * @see ChangeListener
+     */
     public ChangeListener<Toggle> toggleGroupChangedSelection() {
         return (observable, oldValue, newValue) -> {
             RadioButton button;
@@ -181,30 +189,49 @@ public class GameController {
         game=new Game(numberOfRows, cellsPerRow,selectedRule);
     }
 
-    public void cellClicked(int i,int j) {
-        Cell c = game.getCellFromIndex(i, j);
-        c.setRule(selectedRule);
-        game.setCellAtIndex(i, j, c);
-        game.getCellFromIndex(i, j).setLive( !game.getCellFromIndex(i, j).isLive());
+    /**
+     * Handler for the mouseClick event of the {@link Shape}s of the matrixPane.
+     * Sets the cell at row,column live/dead to dead/live
+     * and updates the matrixPane.
+     * @param row Row of the clicked {@link Shape}
+     * @param column  Column of the clicked {@link Shape}
+     */
+    public void cellClicked(int row,int column) {
+        Cell cell = game.getCellFromIndex(row, column);
+        cell.setRule(selectedRule);
+        game.setCellAtIndex(row, column, cell);
+        game.getCellFromIndex(row, column).setLive( !game.getCellFromIndex(row, column).isLive());
         game.countNeighbours();
         updateMatrix();
     }
+
+    /**
+     * Handler of the {@link ChangeListener} of the value of the speedSlider.
+     * Sets the speedInMilliseconds to the current value of the speedSlider
+     * @return ChangeListener to set to the speedSlider
+     * @see ChangeListener
+     */
     public ChangeListener<Number> speedChanged() {
         return (observable, oldValue, newValue) -> speedInMilliseconds = (int)(MILLISECOND_IN_A_SECOND / speedSlider.getValue());
     }
 
+    /**
+     * Handler for the Listener of the random generate {@link Button}.
+     * Sets to live some {@link Cell} randomly with a density based
+     * on the densitySlider. Doesn't reset the matrixPane.
+     */
     @FXML
     public void randomCellsGenerator() {
         //100 is because it needs a percentage
         double density=densitySlider.getValue() / 100;
-        Cell c;
+        Cell cell;
         RandomGenerator rnd = RandomGenerator.getDefault();
-        for(int i = 0; i < numberOfRows; i++){
-            for(int j = 0; j < cellsPerRow; j++){
-                if(!game.getCellFromIndex(i, j).isLive()){
-                    c=new Cell(selectedRule);
-                    c.setLive(rnd.nextDouble() < density);
-                    game.setCellAtIndex(i, j, c);
+        for(int row = 0; row < numberOfRows; row++){
+            for(int column = 0; column < cellsPerRow; column++){
+                if(!game.getCellFromIndex(row, column).isLive()){
+                    cell=new Cell(selectedRule);
+                    cell.setLive(rnd.nextDouble() < density);
+                    game.setCellAtIndex(row, column, cell);
                 }
             }
         }
@@ -212,6 +239,11 @@ public class GameController {
         updateMatrix();
     }
 
+    /**
+     * Handler for the Listener of the clear {@link Button}
+     * Resets the game by instancing anew {@link Game} and
+     * updates the matrixPane.
+     */
     @FXML
     public void resetGame() {
         stopGame();
@@ -219,6 +251,14 @@ public class GameController {
         initGame();
         updateMatrix();
     }
+
+    /**
+     * Handler for the Listener of the "create new rule" {@link Button}.
+     * Opens a new {@link Stage} for creating a new {@link Rule},
+     * the {@link Stage} will be over the current one and will have
+     * the window focus blocking the current {@link javafx.stage.Window}
+     * @throws IOException {@link IOException} that can be thrown by {@link Class} getResource method
+     */
     @FXML
     public void openCreateNewRuleStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("create-cell-rule-view.fxml"));
@@ -236,66 +276,108 @@ public class GameController {
         toggleGroup.getToggles().get(availableRules.size() - 1).setSelected(true);
     }
 
+    /**
+     * Updates the matrixPane {@link Pane} based on the
+     * {@link Game} game cells state and number of neighbours.
+     */
     public void updateMatrix() {
         matrixPane.getChildren().clear();
-        for(int i = 0; i < game.getHeight(); i++){
-            for(int j = 0; j < game.getWidth(); j++){
+        for(int row = 0; row < game.getHeight(); row++){
+            for(int column = 0; column < game.getWidth(); column++){
                 Shape shape;
-                if(game.getCellFromIndex(i, j).isLive()){
-                    shape = getShape(i, j, cellWidth, cellHeight, colors.get(min(colors.size() - 1, game.getCellFromIndex(i, j).getNeighboursCount())));
+                if(game.getCellFromIndex(row, column).isLive()){
+                    shape = getShape(row, column, cellWidth, cellHeight, colors.get(min(colors.size() - 1, game.getCellFromIndex(row, column).getNeighboursCount())));
                 }else{
-                    shape = getShape(i, j,cellWidth, cellHeight, Color.WHITE);
+                    shape = getShape(row, column,cellWidth, cellHeight, Color.WHITE);
                 }
-                final int final1 = i, final2 = j;
+                final int final1 = row, final2 = column;
                 shape.setOnMouseClicked(event->cellClicked(final1, final2));
                 matrixPane.getChildren().add(shape);
             }
         }
     }
 
-    public Shape getShape(int i, int j, double width, double height, Color color) {
+    /**
+     * Returns the {@link Shape} to draw after instancing it
+     * based on the parameters.
+     * This is for the standard game so the {@link Shape}
+     * is upcast from a  {@link Rectangle}.
+     * @param y the y position of hte {@link Shape} to draw
+     * @param x the x position of hte {@link Shape} to draw
+     * @param width the width of the {@link Shape} to draw
+     * @param height the height of the {@link Shape} to draw
+     * @param color  the {@link Color} of the {@link Shape} to draw
+     * @return Returns the {@link Shape} for the caller to add in the {@link Node}
+     */
+    public Shape getShape(int y, int x, double width, double height, Color color) {
         Rectangle rect;
         rect = new Rectangle(width, height);
         rect.setFill(color);
         rect.setStroke(Color.GREY);
-        rect.setX(j * width);
-        rect.setY(i * height);
+        rect.setX(x * width);
+        rect.setY(y * height);
         return rect;
     }
 
+    /**
+     * Adds all the availableRules to the right side {@link ScrollPane}.
+     * For each availableRules {@link Rule} calls
+     *  addRuleToChoosePane.
+     * @throws IOException {@link IOException} can be thrown by addRuleToChoosePane
+     */
     public void initializeCellChoosePane() throws IOException {
         for(Map.Entry<String,Rule> entry : availableRules.entrySet()){
             addRuleToChoosePane(entry.getValue());
         }
     }
+
+    /**
+     * Loads the fxml file "create-cell-rule-view" and puts
+     * it in the option {@link Pane} and initializes the attributes
+     * with the {@link Rule} values.
+     * @param rule {@link Rule} you want to add
+     * @throws IOException  {@link IOException} that can be thrown
+     *                      by {@link Class} getResource method
+     */
     public void addRuleToChoosePane(Rule rule) throws IOException {
         FXMLLoader fxmlLoader;
         fxmlLoader = new FXMLLoader(GameOfLifeApplication.class.getResource("radio-selector-element.fxml"));
         Pane option = fxmlLoader.load();
         option.getChildren().stream().filter(v -> v instanceof RadioButton).forEach(r -> {((RadioButton) r).setToggleGroup(toggleGroup); r.setId(rule.getName());});
         option.getChildren().stream().filter(v -> v instanceof Label).forEach(l -> ((Label) l).setText(rule.getName()));
-        option.getChildren().stream().filter(v -> v instanceof Pane).forEach(p -> drawNeighboursOnPane((Pane) p, rule));
+        option.getChildren().stream().filter(v -> v instanceof Pane).forEach(panel -> drawNeighboursOnPane((Pane) panel, rule));
         chooseCellVBox.getChildren().add(option);
     }
 
-    private void drawNeighboursOnPane(Pane p, Rule r) {
-        List<Coordinate> neighbours = r.getNeighbours();
+    /**
+     * Draws the neighbour cells for the {@link Rule} in
+     * the {@link Pane}.
+     * Empty cells are white and cells which {@link Coordinate}
+     * are in the {@link Rule} neighbourhood are black
+     * @param panel {@link Pane} to draw the cells in
+     * @param rule {@link Rule} to draw
+     */
+    private void drawNeighboursOnPane(Pane panel, Rule rule) {
+        List<Coordinate> neighbours = rule.getNeighbours();
         int size = CustomRuleController.MAX_NEIGHBOURHOOD_SIZE;
-        double cWidth = p.getPrefWidth() / size;
-        double cHeight = p.getPrefHeight() / size;
-        p.getChildren().clear();
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
-                Shape s = getShape(i, j, cWidth, cHeight, Color.WHITE);
-                p.getChildren().add(s);
+        double cWidth = panel.getPrefWidth() / size;
+        double cHeight = panel.getPrefHeight() / size;
+        panel.getChildren().clear();
+        for(int row = 0; row < size; row++){
+            for(int column = 0; column < size; column++){
+                Shape s = getShape(row, column, cWidth, cHeight, Color.WHITE);
+                panel.getChildren().add(s);
             }
         }
-        for(Coordinate c : neighbours){
-            ((Shape) p.getChildren().get(c.x + (size/2) + (c.y + size/2) * size)).setFill(Color.BLACK);
+        for(Coordinate coordinate : neighbours){
+            ((Shape) panel.getChildren().get(coordinate.x + (size/2) + (coordinate.y + size/2) * size)).setFill(Color.BLACK);
         }
-        ((Shape) p.getChildren().get(size/2 * size + size/2)).setFill(Color.RED);
+        ((Shape) panel.getChildren().get(size/2 * size + size/2)).setFill(Color.RED);
     }
-
+    /**
+     * Starts the game, starts the {@link AnimationTimer}
+     * and changes the button to the pause icon.
+     */
     public void startGame() {
         started = true;
         playTButton.setBackground(new Background(
@@ -307,6 +389,11 @@ public class GameController {
         timer.start();
 
     }
+
+    /**
+     * Stops the game, stops the {@link AnimationTimer}
+     * and changes the button to the play icon.
+     */
     public void stopGame() {
         started = false;
         playTButton.setBackground(new Background(

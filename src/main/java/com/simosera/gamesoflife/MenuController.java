@@ -9,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 /**
@@ -32,6 +31,9 @@ public class MenuController {
     @FXML
     private Slider heightSlider;
 
+    /**
+     * Initialize the {@link ComboBox} shapeComboBox
+     */
     public void initialize() {
         shapeComboBox.getItems().clear();
         shapeComboBox.getItems().setAll("Standard (Square)", "Hexagonal");
@@ -39,6 +41,12 @@ public class MenuController {
         shapeComboBox.getSelectionModel().select(0);
     }
 
+
+    /**
+     * Listener that defines the Handler for the change in the value
+     * of the {@link ComboBox} shapeComboBox
+     * @return a {@link ChangeListener} to set the value changed of the {@link ComboBox}
+     */
     private ChangeListener<String> comboBoxValueChanged() {
         return ((observable, oldValue, newValue) -> {
             if(shapeComboBox.getSelectionModel().getSelectedIndex() == 0){
@@ -48,6 +56,14 @@ public class MenuController {
             }
         });
     }
+
+    /**
+     * Start the game by loading the game-view.fxml file
+     * and sets the right {@link GameController} based on the
+     * shapeComboBox value
+     * @param event {@link ActionEvent} needed to get the current {@link javafx.stage.Window}
+     * @throws IOException may be thrown by {@link Class} getResource method
+     */
     @FXML
     void startGame(ActionEvent event) throws IOException {
         int ruleIndex = shapeComboBox.getSelectionModel().getSelectedIndex();

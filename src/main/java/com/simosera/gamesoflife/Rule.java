@@ -127,6 +127,11 @@ public class Rule {
     public void addNeighbour(Coordinate n) {
         neighbours.add(n);
     }
+
+    /**
+     * Removes the neighbour equal to {@link Coordinate} parameter
+     * @param coordinate {@link Coordinate}  value to delete from the neighbours
+     */
     public void removeNeighbour(Coordinate coordinate) {
         neighbours.removeIf(coordinate::equals);
     }
@@ -134,6 +139,10 @@ public class Rule {
         this.neighbours = neighbours;
     }
 
+    /**
+     * Conway rule for the standard game (Square shape)
+     * @return  Rule with teh values of the Conway rules
+     */
     public static Rule getConwayRule() {
         return new Rule("Conway", 4, 1, 3, 3,
                 List.of(new Coordinate(-1, -1),
@@ -143,6 +152,10 @@ public class Rule {
                 new Coordinate(1, 1)));
     }
 
+    /**
+     * von Neumann rule for the standard game (Square shape)
+     * @return  Rule with teh values of the von Neumann rules
+     */
     public static Rule getNeumannRule() {
         return new Rule("von Neumann", 4, 1, 2, 2,
                 List.of(new Coordinate(0, -1),
@@ -150,6 +163,10 @@ public class Rule {
                         new Coordinate(1, 0)));
     }
 
+    /**
+     * Conway rule for the hexagonal game (Hexagon shape)
+     * @return  Rule with teh values of the Conway rules for hexagons
+     */
     public static Rule getConwayHexRule() {
         return new Rule("Conway Hexagonal", 3, 1, 2, 2,
                 List.of(new Coordinate(-1, -1),
@@ -159,7 +176,11 @@ public class Rule {
     }
 
 
-
+    /**
+     * The rule that calls this should be a {@link Rule}
+     * for the even rows.
+     * @return the odd row version of this rule
+     */
     public  Rule getHexOddRuleFromEven() {
          Rule rule = new Rule(this);
          rule.setNeighbours(new ArrayList<>());
@@ -171,6 +192,12 @@ public class Rule {
          });
          return rule;
     }
+
+    /**
+     * The rule that calls this should be a {@link Rule}
+     * for the odd rows.
+     * @return the even row version of this rule
+     */
     public  Rule getHexEvenRuleFromOdd() {
         Rule rule= new Rule(this);
         rule.setNeighbours(new ArrayList<>());
@@ -182,6 +209,12 @@ public class Rule {
         });
         return rule;
     }
+
+    /**
+     * Check if the {@link Coordinate} is already in the neighbours {@link List}
+     * @param coordinate {@link Coordinate} to search in the neighbours {@link List}
+     * @return true if it's already a neighbour, false otherwise
+     */
     public boolean isNeighbour(Coordinate coordinate) {
         return neighbours.stream().anyMatch(coordinate::equals);
     }
