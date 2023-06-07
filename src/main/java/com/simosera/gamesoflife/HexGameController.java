@@ -6,25 +6,32 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
-
+/**
+ * Hexagonal version of the GameController
+ * It has methods specific for drawing hexagons
+ * instead of squares, and it creates an HexGame instance
+ * instead of a Game one
+ * @author Simone Serafini
+ * @version 2023.06.07
+ */
 public class HexGameController extends GameController {
-    public void initShapeData(){
+    public void initShapeData() {
         availableRules.put(Rule.getConwayHexRule().getName(), Rule.getConwayHexRule());
-        cellHeight=matrixPane.getPrefHeight()*(4.0/3)/(double) numberOfRows;
-        cellWidth = cellHeight*0.866;
-        cellsPerRow=(int)(matrixPane.getPrefWidth()/cellWidth);
+        cellHeight = matrixPane.getPrefHeight() * (4.0 / 3) / (double) numberOfRows;
+        cellWidth = cellHeight * 0.866;
+        cellsPerRow = (int) (matrixPane.getPrefWidth() / cellWidth);
     }
     @FXML
     public void initGame(){
-        game=new HexGame(numberOfRows, cellsPerRow,selectedRule);
+        game = new HexGame(numberOfRows, cellsPerRow, selectedRule);
     }
-    public Shape getShape(int i, int j,double width,double height, Color color){
-        double r = height/2; // the inner radius from hexagon center to outer corner
-        double n = width/2; // the inner radius from hexagon center to middle of the axis
+    public Shape getShape(int i, int j, double width, double height, Color color) {
+        double r = height / 2; // the inner radius from hexagon center to outer corner
+        double n = width / 2; // apothem of the hexagon
         Polygon hexagon;
-        hexagon=new Polygon();
-        double x =j* 2 * n + (i % 2) * n ;
-        double y=i * 2 * r * 0.75;
+        hexagon = new Polygon();
+        double x = j*2 * n + (i % 2) * n ;
+        double y = i*2 * r * 0.75;
         hexagon.getPoints().addAll(x, y,
                 x, y + r,
                 x + n, y + r * 1.5,

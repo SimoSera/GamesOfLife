@@ -8,15 +8,26 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
+/**
+ * Controller used to control the view for
+ * creating new rules
+ * @author Simone Serafini
+ * @version 2023.06.07
+ */
 public class CustomRuleController {
-    public static final int maxNeighbourhoodSize=9; //Use only odd values
-    double cellWidth;
-    double cellHeight;
 
+    /** Size of the matrix for selecting the neighbours
+     * MUST be an odd number */
+    public static final int MAX_NEIGHBOURHOOD_SIZE=9;
+
+    /** Rule that will be set with the right values*/
     Rule customRule;
+
+    /** Function to pass to this class the getShape method from GameController*/
+    GetShapeFunction getShape;
+
     @FXML
     private Spinner<Integer> maxReproductionSpinner;
 
@@ -32,15 +43,21 @@ public class CustomRuleController {
     @FXML
     private Spinner<Integer> overpopulationSpinner;
 
-
     @FXML
     private Spinner<Integer> underpopulationSpinner;
+
     IntegerSpinnerValueFactory underpopulationFactory;
+
     IntegerSpinnerValueFactory overpopulationFactory;
+
     IntegerSpinnerValueFactory minReproductionFactory;
+
     IntegerSpinnerValueFactory maxReproductionFactory;
 
-    GetShapeFunction getShape;
+    double cellWidth;
+
+    double cellHeight;
+
 
     public void initData(Rule rule,GetShapeFunction getShape){
         this.getShape=getShape;
@@ -57,8 +74,8 @@ public class CustomRuleController {
         overpopulationSpinner.setValueFactory(overpopulationFactory);
         minReproductionSpinner.setValueFactory(minReproductionFactory);
         maxReproductionSpinner.setValueFactory(maxReproductionFactory);
-        cellWidth=neighbourSelectionPanel.getPrefWidth()/maxNeighbourhoodSize;
-        cellHeight=neighbourSelectionPanel.getPrefHeight()/maxNeighbourhoodSize;
+        cellWidth=neighbourSelectionPanel.getPrefWidth()/ MAX_NEIGHBOURHOOD_SIZE;
+        cellHeight=neighbourSelectionPanel.getPrefHeight()/ MAX_NEIGHBOURHOOD_SIZE;
         drawNeighboursOnPane();
     }
     public void updateFactories(){
@@ -75,7 +92,7 @@ public class CustomRuleController {
     }
 
     public void cellClicked(int i,int j){
-        Coordinate coordinate=new Coordinate(j-(maxNeighbourhoodSize/2),i-(maxNeighbourhoodSize/2));
+        Coordinate coordinate=new Coordinate(j-(MAX_NEIGHBOURHOOD_SIZE /2),i-(MAX_NEIGHBOURHOOD_SIZE /2));
         if(customRule.isNeighbour(coordinate)){
             customRule.removeNeighbour(coordinate);
         }else{
@@ -86,8 +103,8 @@ public class CustomRuleController {
     }
     private void drawNeighboursOnPane(){
         neighbourSelectionPanel.getChildren().clear();
-        for(int i=0;i<maxNeighbourhoodSize ;i++){
-            for(int j=0;j<maxNeighbourhoodSize;j++){
+        for(int i = 0; i< MAX_NEIGHBOURHOOD_SIZE; i++){
+            for(int j = 0; j< MAX_NEIGHBOURHOOD_SIZE; j++){
                 Shape sh;
                 final int finalI=i,finalJ=j;
                 sh=getShape.apply(i,j,cellWidth,cellHeight,Color.WHITE);
@@ -96,9 +113,9 @@ public class CustomRuleController {
             }
         }
         for(Coordinate c : customRule.neighbours){
-            ((Shape)neighbourSelectionPanel.getChildren().get(c.x+(maxNeighbourhoodSize/2)+(c.y+maxNeighbourhoodSize/2)*maxNeighbourhoodSize)).setFill(Color.BLACK);
+            ((Shape)neighbourSelectionPanel.getChildren().get(c.x+(MAX_NEIGHBOURHOOD_SIZE /2)+(c.y+ MAX_NEIGHBOURHOOD_SIZE /2)* MAX_NEIGHBOURHOOD_SIZE)).setFill(Color.BLACK);
         }
-        ((Shape)neighbourSelectionPanel.getChildren().get(maxNeighbourhoodSize/2*maxNeighbourhoodSize+maxNeighbourhoodSize/2)).setFill(Color.RED);
+        ((Shape)neighbourSelectionPanel.getChildren().get(MAX_NEIGHBOURHOOD_SIZE /2* MAX_NEIGHBOURHOOD_SIZE + MAX_NEIGHBOURHOOD_SIZE /2)).setFill(Color.RED);
     }
     @FXML
     public void saveButtonPressed(Event eevent){
