@@ -16,7 +16,7 @@ In fact there is a GUI for creating your own rules, you can choose the neighbour
 This application could support different rules in the same game, like one cell uses the Conway's rules and the other one a custom rule.
 This is mot implemented as now becuase the user would have to set not only the live cells but also te dead ones so it would be a long setup, if in the future i can find a way around like randomly choosing the dead ones.
 
-# Hexagonal Gamo Of Life (Hexagonal cells)
+# Hexagonal Game Of Life (Hexagonal cells)
 
 This is a different version of game of life where the cells are heagons.
 
